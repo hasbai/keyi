@@ -8,7 +8,6 @@ require (
 	github.com/goccy/go-json v0.9.10
 	github.com/gofiber/fiber/v2 v2.35.0
 	github.com/hetiansu5/urlquery v1.2.7
-	github.com/sideshow/apns2 v0.23.0
 	github.com/stretchr/testify v1.8.0
 	github.com/swaggo/fiber-swagger v1.3.0
 	github.com/swaggo/swag v1.8.4
@@ -29,7 +28,6 @@ require (
 	github.com/go-playground/locales v0.14.0 // indirect
 	github.com/go-playground/universal-translator v0.18.0 // indirect
 	github.com/go-sql-driver/mysql v1.6.0 // indirect
-	github.com/golang-jwt/jwt/v4 v4.4.2 // indirect
 	github.com/jinzhu/inflection v1.0.0 // indirect
 	github.com/jinzhu/now v1.1.5 // indirect
 	github.com/josharian/intern v1.0.0 // indirect
@@ -46,6 +44,7 @@ require (
 	go.uber.org/atomic v1.9.0 // indirect
 	go.uber.org/multierr v1.8.0 // indirect
 	golang.org/x/crypto v0.0.0-20220214200702-86341886e292 // indirect
+	golang.org/x/exp v0.0.0-20220930202632-ec3f01382ef9 // indirect
 	golang.org/x/net v0.0.0-20220809012201-f428fae20770 // indirect
 	golang.org/x/sys v0.0.0-20220731174439-a90be440212d // indirect
 	golang.org/x/text v0.3.7 // indirect
