@@ -1,0 +1,10 @@
+{
+  "name": "可易",
+  "description": "校园二手交易平台",
+  "version": "0.1.0",
+  "homepage": "https://github.com/hasbai/keyi",
+  "repository": "https://github.com/hasbai/keyi",
+  "author": "hasbai",
+  "email": "jsclndnz@gmail.com",
+  "license": "Apache-2.0"
+}

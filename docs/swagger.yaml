@@ -1,0 +1,365 @@
+basePath: /api
+definitions:
+  category.CreateModel:
+    properties:
+      description:
+        maxLength: 256
+        type: string
+      name:
+        maxLength: 32
+        type: string
+    required:
+    - name
+    type: object
+  category.DeleteModel:
+    properties:
+      to:
+        minimum: 1
+        type: integer
+    required:
+    - to
+    type: object
+  models.Category:
+    properties:
+      description:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+      products:
+        items:
+          $ref: '#/definitions/models.Product'
+        type: array
+      time_created:
+        type: string
+      time_updated:
+        type: string
+    type: object
+  models.JSON:
+    additionalProperties: {}
+    type: object
+  models.MessageModel:
+    properties:
+      product:
+        type: string
+    type: object
+  models.Product:
+    properties:
+      category_id:
+        type: integer
+      closed:
+        type: boolean
+      description:
+        type: string
+      id:
+        type: integer
+      images:
+        $ref: '#/definitions/models.JSON'
+      name:
+        type: string
+      price:
+        type: number
+      time_created:
+        type: string
+      time_updated:
+        type: string
+      type:
+        type: integer
+      user:
+        $ref: '#/definitions/models.User'
+      user_id:
+        type: integer
+    type: object
+  models.User:
+    properties:
+      avatar:
+        type: string
+      description:
+        type: string
+      email:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+      password:
+        type: string
+      time_created:
+        type: string
+      time_updated:
+        type: string
+    type: object
+  product.CreateModel:
+    properties:
+      description:
+        type: string
+      images:
+        $ref: '#/definitions/models.JSON'
+      name:
+        type: string
+      price:
+        type: number
+      type:
+        type: integer
+    type: object
+  product.ModifyModel:
+    properties:
+      category_id:
+        type: integer
+      description:
+        type: string
+      images:
+        $ref: '#/definitions/models.JSON'
+      name:
+        type: string
+      price:
+        type: number
+      type:
+        type: integer
+    type: object
+info:
+  contact:
+    email: jsclndnz@gmail.com
+    name: Maintainer Shi Yue
+  description: This is a campus flea market system.
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  title: Ke yi
+  version: 0.1.0
+paths:
+  /:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.MessageModel'
+  /categories:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.Category'
+            type: array
+      summary: List Categories
+      tags:
+      - Category
+    post:
+      parameters:
+      - description: json
+        in: body
+        name: json
+        required: true
+        schema:
+          $ref: '#/definitions/category.CreateModel'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Category'
+      summary: Add A Category
+      tags:
+      - Category
+  /categories/{category_id}/products:
+    get:
+      parameters:
+      - default: 0
+        description: offset of object array
+        in: query
+        minimum: 0
+        name: offset
+        type: integer
+      - default: id
+        description: SQL ORDER BY field
+        in: query
+        name: orderBy
+        type: string
+      - default: 10
+        description: length of object array
+        in: query
+        maximum: 30
+        minimum: 0
+        name: size
+        type: integer
+      - default: asc
+        description: Sort order
+        enum:
+        - asc
+        - desc
+        in: query
+        name: sort
+        type: string
+      - description: category_id
+        in: path
+        name: category_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.Product'
+            type: array
+      summary: List Products of a User
+      tags:
+      - Product
+    post:
+      parameters:
+      - description: json
+        in: body
+        name: json
+        required: true
+        schema:
+          $ref: '#/definitions/product.CreateModel'
+      - description: category_id
+        in: path
+        name: category_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/models.Product'
+      summary: Add a product
+      tags:
+      - Product
+  /categories/{id}:
+    delete:
+      parameters:
+      - description: json
+        in: body
+        name: json
+        required: true
+        schema:
+          $ref: '#/definitions/category.DeleteModel'
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+      summary: Delete a category
+      tags:
+      - Category
+    get:
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Category'
+      summary: Get a category
+      tags:
+      - Category
+    put:
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: json
+        in: body
+        name: json
+        required: true
+        schema:
+          $ref: '#/definitions/category.CreateModel'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Category'
+      summary: Modify A Category
+      tags:
+      - Category
+  /products/{id}:
+    delete:
+      parameters:
+      - description: product id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+      summary: Set a product as closed.
+      tags:
+      - Product
+    get:
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Product'
+      summary: Get a product
+      tags:
+      - Product
+    put:
+      parameters:
+      - description: json
+        in: body
+        name: json
+        required: true
+        schema:
+          $ref: '#/definitions/product.ModifyModel'
+      - description: product id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/models.Product'
+      summary: Modify a product
+      tags:
+      - Product
+securityDefinitions:
+  ApiKeyAuth:
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"
