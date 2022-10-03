@@ -21,6 +21,8 @@ definitions:
     type: object
   models.Category:
     properties:
+      created_at:
+        type: string
       description:
         type: string
       id:
@@ -31,13 +33,8 @@ definitions:
         items:
           $ref: '#/definitions/models.Product'
         type: array
-      time_created:
+      updated_at:
         type: string
-      time_updated:
-        type: string
-    type: object
-  models.JSON:
-    additionalProperties: {}
     type: object
   models.MessageModel:
     properties:
@@ -50,72 +47,102 @@ definitions:
         type: integer
       closed:
         type: boolean
+      condition:
+        description: 0 - 10
+        type: number
+      contact:
+        type: string
+      created_at:
+        type: string
       description:
         type: string
       id:
         type: integer
       images:
-        $ref: '#/definitions/models.JSON'
+        items:
+          type: string
+        type: array
+      location:
+        type: string
       name:
         type: string
       price:
         type: number
-      time_created:
-        type: string
-      time_updated:
-        type: string
       type:
         type: integer
-      user:
-        $ref: '#/definitions/models.User'
+      updated_at:
+        type: string
       user_id:
         type: integer
     type: object
-  models.User:
-    properties:
-      avatar:
-        type: string
-      description:
-        type: string
-      email:
-        type: string
-      id:
-        type: integer
-      name:
-        type: string
-      password:
-        type: string
-      time_created:
-        type: string
-      time_updated:
-        type: string
-    type: object
   product.CreateModel:
     properties:
+      condition:
+        maximum: 10
+        minimum: 0
+        type: number
+      contact:
+        maxLength: 32
+        type: string
       description:
+        maxLength: 256
         type: string
       images:
-        $ref: '#/definitions/models.JSON'
+        items:
+          type: string
+        type: array
+      location:
+        maxLength: 32
+        type: string
       name:
+        maxLength: 32
         type: string
       price:
+        minimum: 0
         type: number
       type:
+        description: -1 is to buy, 1 is to sell
+        enum:
+        - -1
+        - 1
         type: integer
+    required:
+    - description
+    - name
+    - price
+    - type
     type: object
   product.ModifyModel:
     properties:
       category_id:
         type: integer
+      closed:
+        type: boolean
+      condition:
+        maximum: 10
+        minimum: 0
+        type: number
+      contact:
+        maxLength: 32
+        type: string
       description:
+        maxLength: 256
         type: string
       images:
-        $ref: '#/definitions/models.JSON'
+        items:
+          type: string
+        type: array
+      location:
+        maxLength: 32
+        type: string
       name:
+        maxLength: 32
         type: string
       price:
+        minimum: 0
         type: number
       type:
+        description: -1 is to buy, 1 is to sell
         type: integer
     type: object
 info:
@@ -350,8 +377,8 @@ paths:
       produces:
       - application/json
       responses:
-        "201":
-          description: Created
+        "200":
+          description: OK
           schema:
             $ref: '#/definitions/models.Product'
       summary: Modify a product

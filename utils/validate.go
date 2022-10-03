@@ -3,6 +3,7 @@ package utils
 import (
 	"github.com/creasty/defaults"
 	"github.com/go-playground/validator/v10"
+	"github.com/goccy/go-json"
 	"github.com/gofiber/fiber/v2"
 	"reflect"
 	"strings"
@@ -72,7 +73,11 @@ func ValidateQuery(c *fiber.Ctx, model any) error {
 }
 
 func ValidateBody(c *fiber.Ctx, model any) error {
-	err := c.BodyParser(model)
+	body := c.Body()
+	if len(body) == 0 {
+		body = []byte("{}")
+	}
+	err := json.Unmarshal(body, model)
 	if err != nil {
 		return err
 	}

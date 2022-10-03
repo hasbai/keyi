@@ -49,3 +49,28 @@ func TestCopy(t *testing.T) {
 	assert.Equal(t, "", dest.Name)
 	assert.Equal(t, source.Age, dest.Age)
 }
+
+// TODO: TestCopyEmbed not work
+//func TestCopyEmbed(t *testing.T) {
+//	type sourceType struct {
+//		Name string
+//		baseModel
+//	}
+//
+//	type destType struct {
+//		ID   int
+//		Name string
+//	}
+//
+//	source := sourceType{
+//		Name: "name",
+//		baseModel: baseModel{
+//			ID: 1,
+//		},
+//	}
+//	dest := destType{}
+//	err := Copy(&source, &dest)
+//	assert.Nilf(t, err, "copy failed: %v", err)
+//	assert.Equal(t, source.Name, dest.Name)
+//	assert.Equal(t, source.ID, dest.ID)
+//}

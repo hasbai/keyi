@@ -77,13 +77,12 @@ func AddProduct(c *fiber.Ctx) error {
 	}
 
 	product := Product{
-		Name:        body.Name,
-		Description: body.Description,
-		Images:      body.Images,
-		Price:       body.Price,
-		Type:        body.Type,
-		CategoryID:  categoryID,
-		UserID:      c.Locals("userID").(int),
+		CategoryID: categoryID,
+		UserID:     c.Locals("userID").(int),
+	}
+	err = body.ToProduct(&product)
+	if err != nil {
+		return err
 	}
 
 	err = DB.Create(&product).Error
@@ -101,7 +100,7 @@ func AddProduct(c *fiber.Ctx) error {
 // @Param json body ModifyModel true "json"
 // @Param id path int true "product id"
 // @Router /products/{id} [put]
-// @Success 201 {object} Product
+// @Success 200 {object} Product
 func ModifyProduct(c *fiber.Ctx) error {
 	id, _ := c.ParamsInt("id")
 
@@ -113,19 +112,33 @@ func ModifyProduct(c *fiber.Ctx) error {
 
 	var product Product
 	err = DB.
-		Where("user_id = ?", c.Locals("userID").(int)).
 		Where("id = ?", id).
 		First(&product).Error
 	if err != nil {
 		return err
 	}
 
-	err = DB.Model(&product).Select("closed").Updates(&body).Error
+	// TODO: owner or admin
+
+	// ensure false is set if given
+	if body.Closed != nil {
+		err = DB.Model(&product).Update("closed", *body.Closed).Error
+		if err != nil {
+			return err
+		}
+	}
+
+	var productUpdate Product
+	err = body.ToProduct(&productUpdate)
+	if err != nil {
+		return err
+	}
+	err = DB.Model(&product).Updates(&productUpdate).Error
 	if err != nil {
 		return err
 	}
 
-	return c.Status(200).JSON(product)
+	return c.JSON(product)
 }
 
 // DeleteProduct
@@ -140,12 +153,14 @@ func DeleteProduct(c *fiber.Ctx) error {
 
 	var product Product
 	err := DB.
-		Where("user_id = ?", c.Locals("userID").(int)).
 		Where("id = ?", id).
 		First(&product).Error
 	if err != nil {
 		return err
 	}
+
+	// TODO: owner or admin
+	// c.Locals("userID").(int).
 
 	product.Closed = true
 	err = DB.Save(&product).Error

@@ -16,32 +16,32 @@ type Map = map[string]any
 
 type BaseModel struct {
 	ID        int       `gorm:"primarykey" json:"id"`
-	CreatedAt time.Time `json:"time_created"`
-	UpdatedAt time.Time `json:"time_updated"`
+	CreatedAt time.Time `json:"created_at"`
+	UpdatedAt time.Time `json:"updated_at"`
 }
 
 func (model BaseModel) GetID() int {
 	return model.ID
 }
 
-type JSON map[string]any
+type StringSlice []string
 
-func (t JSON) Value() (driver.Value, error) {
+func (t StringSlice) Value() (driver.Value, error) {
 	return json.Marshal(t)
 }
 
-func (t *JSON) Scan(input any) error {
+func (t *StringSlice) Scan(input any) error {
 	return json.Unmarshal(input.([]byte), t)
 }
 
 // GormDataType gorm common data type
-func (JSON) GormDataType() string {
+func (StringSlice) GormDataType() string {
 	return "json"
 }
 
 // GormDBDataType gorm db data type
 //goland:noinspection GoUnusedParameter
-func (JSON) GormDBDataType(db *gorm.DB, field *schema.Field) string {
+func (StringSlice) GormDBDataType(db *gorm.DB, field *schema.Field) string {
 	switch db.Dialector.Name() {
 	case "sqlite":
 		return "JSON"

@@ -338,8 +338,8 @@ const docTemplate = `{
                     }
                 ],
                 "responses": {
-                    "201": {
-                        "description": "Created",
+                    "200": {
+                        "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/models.Product"
                         }
@@ -403,6 +403,9 @@ const docTemplate = `{
         "models.Category": {
             "type": "object",
             "properties": {
+                "created_at": {
+                    "type": "string"
+                },
                 "description": {
                     "type": "string"
                 },
@@ -418,17 +421,10 @@ const docTemplate = `{
                         "$ref": "#/definitions/models.Product"
                     }
                 },
-                "time_created": {
-                    "type": "string"
-                },
-                "time_updated": {
+                "updated_at": {
                     "type": "string"
                 }
             }
-        },
-        "models.JSON": {
-            "type": "object",
-            "additionalProperties": {}
         },
         "models.MessageModel": {
             "type": "object",
@@ -447,6 +443,16 @@ const docTemplate = `{
                 "closed": {
                     "type": "boolean"
                 },
+                "condition": {
+                    "description": "0 - 10",
+                    "type": "number"
+                },
+                "contact": {
+                    "type": "string"
+                },
+                "created_at": {
+                    "type": "string"
+                },
                 "description": {
                     "type": "string"
                 },
@@ -454,7 +460,13 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "images": {
-                    "$ref": "#/definitions/models.JSON"
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "location": {
+                    "type": "string"
                 },
                 "name": {
                     "type": "string"
@@ -462,69 +474,64 @@ const docTemplate = `{
                 "price": {
                     "type": "number"
                 },
-                "time_created": {
-                    "type": "string"
-                },
-                "time_updated": {
-                    "type": "string"
-                },
                 "type": {
                     "type": "integer"
                 },
-                "user": {
-                    "$ref": "#/definitions/models.User"
+                "updated_at": {
+                    "type": "string"
                 },
                 "user_id": {
                     "type": "integer"
                 }
             }
         },
-        "models.User": {
-            "type": "object",
-            "properties": {
-                "avatar": {
-                    "type": "string"
-                },
-                "description": {
-                    "type": "string"
-                },
-                "email": {
-                    "type": "string"
-                },
-                "id": {
-                    "type": "integer"
-                },
-                "name": {
-                    "type": "string"
-                },
-                "password": {
-                    "type": "string"
-                },
-                "time_created": {
-                    "type": "string"
-                },
-                "time_updated": {
-                    "type": "string"
-                }
-            }
-        },
         "product.CreateModel": {
             "type": "object",
+            "required": [
+                "description",
+                "name",
+                "price",
+                "type"
+            ],
             "properties": {
+                "condition": {
+                    "type": "number",
+                    "maximum": 10,
+                    "minimum": 0
+                },
+                "contact": {
+                    "type": "string",
+                    "maxLength": 32
+                },
                 "description": {
-                    "type": "string"
+                    "type": "string",
+                    "maxLength": 256
                 },
                 "images": {
-                    "$ref": "#/definitions/models.JSON"
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "location": {
+                    "type": "string",
+                    "maxLength": 32
                 },
                 "name": {
-                    "type": "string"
+                    "type": "string",
+                    "maxLength": 32
                 },
                 "price": {
-                    "type": "number"
+                    "type": "number",
+                    "minimum": 0
                 },
                 "type": {
-                    "type": "integer"
+                    "description": "-1 is to buy, 1 is to sell",
+                    "type": "integer",
+                    "enum": [
+                        -1,
+                        1
+                    ]
                 }
             }
         },
@@ -534,19 +541,42 @@ const docTemplate = `{
                 "category_id": {
                     "type": "integer"
                 },
+                "closed": {
+                    "type": "boolean"
+                },
+                "condition": {
+                    "type": "number",
+                    "maximum": 10,
+                    "minimum": 0
+                },
+                "contact": {
+                    "type": "string",
+                    "maxLength": 32
+                },
                 "description": {
-                    "type": "string"
+                    "type": "string",
+                    "maxLength": 256
                 },
                 "images": {
-                    "$ref": "#/definitions/models.JSON"
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "location": {
+                    "type": "string",
+                    "maxLength": 32
                 },
                 "name": {
-                    "type": "string"
+                    "type": "string",
+                    "maxLength": 32
                 },
                 "price": {
-                    "type": "number"
+                    "type": "number",
+                    "minimum": 0
                 },
                 "type": {
+                    "description": "-1 is to buy, 1 is to sell",
                     "type": "integer"
                 }
             }

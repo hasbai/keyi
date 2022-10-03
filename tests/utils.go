@@ -79,10 +79,10 @@ func testCommonQuery(t *testing.T, method string, route string, statusCode int, 
 
 	res, err := App.Test(req, -1)
 	assert.Nilf(t, err, "perform request")
-	assert.Equalf(t, statusCode, res.StatusCode, "status code")
 
 	responseBody, err := ioutil.ReadAll(res.Body)
 	assert.Nilf(t, err, "decode response")
+	assert.Equalf(t, statusCode, res.StatusCode, string(responseBody))
 
 	return responseBody
 }

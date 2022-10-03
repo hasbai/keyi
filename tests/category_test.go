@@ -8,20 +8,25 @@ import (
 )
 
 func init() {
+	DB.Create(&User{
+		BaseModel: BaseModel{
+			ID: 1,
+		}})
 	categories := make([]Category, 10)
 	for i := 1; i <= 10; i++ {
 		categories[i-1].ID = i
 		categories[i-1].Name = strconv.Itoa(i)
 		categories[i-1].Description = strconv.Itoa(i)
 	}
-	holes := make([]Product, 10)
+	products := make([]Product, 10)
 	for i := 0; i < 10; i++ {
-		holes[i] = Product{
+		products[i] = Product{
 			CategoryID: 1,
+			UserID:     1,
 		}
 	}
 	DB.Create(&categories)
-	DB.Create(&holes)
+	DB.Create(&products)
 }
 
 func TestGetCategory(t *testing.T) {
