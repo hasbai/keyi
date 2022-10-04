@@ -10,10 +10,16 @@
 ### Config
 You have to export these environment variables.
 
-| Name   | Description     | Value                                              |
-| ------ |-----------------| -------------------------------------------------- |
-| MODE   | 运行环境            | dev, test, production                              |
-| DB_URL | 数据库 URL (mysql) | user:pass@tcp(127.0.0.1:3306)/dbname?parseTime=tru |
+| Name           | Description     | Value                                               |
+|----------------|-----------------|-----------------------------------------------------|
+| MODE           | 运行环境            | dev, test, production                               |
+| SITE_NAME      | 站点名称            | 可易                                                  |
+| DB_URL         | 数据库 URL (mysql) | user:pass@tcp(127.0.0.1:3306)/dbname?parseTime=true |
+| REDIS_URL      | 如果为空，使用内存缓存     | redis:6379                                          |
+| EMAIL_HOST     | EMAIL_HOST      |                                                     |
+| EMAIL_PORT     | EMAIL_PORT      |                                                     |
+| EMAIL_USER     | 也是默认的发件人        |                                                     |
+| EMAIL_PASSWORD | EMAIL_PASSWORD  |                                                     |
 
 ### Build
 ```shell

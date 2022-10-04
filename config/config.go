@@ -13,7 +13,13 @@ type MyConfig struct {
 	Debug bool   `default:"false" env:"DEBUG"`
 	// example: user:pass@tcp(127.0.0.1:3306)/dbname?parseTime=true
 	// for more detail, see https://github.com/go-sql-driver/mysql#dsn-data-source-name
-	DbUrl string `default:"" env:"DB_URL"`
+	DbUrl         string `default:"" env:"DB_URL"`
+	RedisURL      string `default:"redis:6379" env:"REDIS_URL"`
+	EmailHost     string `default:"" env:"EMAIL_HOST"`
+	EmailPort     int    `default:"587" env:"EMAIL_PORT"`
+	EmailUser     string `default:"" env:"EMAIL_USER"`
+	EmailPassword string `default:"" env:"EMAIL_PASSWORD"`
+	SiteName      string `default:"可易" env:"SITE_NAME"`
 }
 
 var Config MyConfig

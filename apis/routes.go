@@ -3,6 +3,7 @@ package apis
 import (
 	"keyi/apis/category"
 	"keyi/apis/product"
+	"keyi/apis/user"
 	_ "keyi/docs"
 
 	"github.com/gofiber/fiber/v2"
@@ -27,4 +28,5 @@ func RegisterRoutes(app *fiber.App) {
 
 	product.RegisterRoutes(group)
 	category.RegisterRoutes(group)
+	user.RegisterRoutes(group)
 }

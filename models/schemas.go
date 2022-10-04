@@ -21,5 +21,5 @@ func (q *Query) BaseQuery() *gorm.DB {
 }
 
 type MessageModel struct {
-	Message string `json:"product"`
+	Message string `json:"message"`
 }
