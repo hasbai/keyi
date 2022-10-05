@@ -23,10 +23,14 @@ func SetCache(key string, value any, expiration time.Duration) error {
 
 func GetCache(key string, value any) error {
 	data, err := config.Cache.Get(context.Background(), key)
-	if err != nil {
+	if err == nil {
+		return json.Unmarshal(data, value)
+	} else {
+		if err.Error() == "Entry not found" {
+			return nil
+		}
 		return err
 	}
-	return json.Unmarshal(data, value)
 }
 
 func DeleteCache(key string) error {

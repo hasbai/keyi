@@ -5,6 +5,7 @@ import (
 	"github.com/google/uuid"
 	"keyi/utils"
 	"math/rand"
+	"strings"
 	"time"
 )
 
@@ -16,19 +17,19 @@ func randomCode() string {
 
 func defaultUsername() string {
 	uid := uuid.NewString()
-	return uid
+	return strings.Replace(uid, "-", "", -1)
 }
 
 func validateCode(email, code string) error {
+	if code == "" {
+		return utils.BadRequest("验证码不能为空")
+	}
 	var myCode string
 	err := utils.GetCache(email, &myCode)
 	if err != nil {
 		return err
 	}
-	if code == "" || myCode == "" {
-		return utils.BadRequest("验证码不能为空")
-	}
-	if code != myCode {
+	if myCode == "" || code != myCode {
 		return utils.BadRequest("验证码错误")
 	}
 	return nil

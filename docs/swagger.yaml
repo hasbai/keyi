@@ -38,7 +38,7 @@ definitions:
     type: object
   models.MessageModel:
     properties:
-      product:
+      message:
         type: string
     type: object
   models.Product:
@@ -74,6 +74,25 @@ definitions:
         type: string
       user_id:
         type: integer
+    type: object
+  models.User:
+    properties:
+      avatar:
+        type: string
+      created_at:
+        type: string
+      description:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+      products:
+        items:
+          $ref: '#/definitions/models.Product'
+        type: array
+      updated_at:
+        type: string
     type: object
   product.CreateModel:
     properties:
@@ -144,6 +163,62 @@ definitions:
       type:
         description: -1 is to buy, 1 is to sell
         type: integer
+    type: object
+  user.EmailModel:
+    properties:
+      email:
+        maxLength: 64
+        type: string
+    required:
+    - email
+    type: object
+  user.ModifyModel:
+    properties:
+      avatar:
+        maxLength: 256
+        type: string
+      code:
+        maxLength: 6
+        type: string
+      description:
+        maxLength: 256
+        type: string
+      name:
+        maxLength: 32
+        type: string
+      new_password:
+        description: to change password, either password or code is required
+        maxLength: 128
+        type: string
+      password:
+        maxLength: 128
+        type: string
+    type: object
+  user.RegisterModel:
+    properties:
+      avatar:
+        maxLength: 256
+        type: string
+      code:
+        maxLength: 6
+        minLength: 6
+        type: string
+      description:
+        maxLength: 256
+        type: string
+      email:
+        maxLength: 64
+        type: string
+      name:
+        maxLength: 32
+        type: string
+      password:
+        maxLength: 128
+        type: string
+    required:
+    - code
+    - email
+    - password
     type: object
 info:
   contact:
@@ -384,6 +459,68 @@ paths:
       summary: Modify a product
       tags:
       - Product
+  /users:
+    post:
+      parameters:
+      - description: json
+        in: body
+        name: json
+        required: true
+        schema:
+          $ref: '#/definitions/user.RegisterModel'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/models.User'
+      summary: Register a new user
+      tags:
+      - User
+  /users/{id}:
+    put:
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: json
+        in: body
+        name: json
+        required: true
+        schema:
+          $ref: '#/definitions/user.ModifyModel'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.User'
+      summary: Modify a user
+      tags:
+      - User
+  /verify/email:
+    post:
+      parameters:
+      - description: json
+        in: body
+        name: json
+        required: true
+        schema:
+          $ref: '#/definitions/user.EmailModel'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.MessageModel'
+      summary: Verify a user's email
+      tags:
+      - Auth
 securityDefinitions:
   ApiKeyAuth:
     in: header

@@ -1,10 +1,11 @@
 package user
 
 import (
-	"fmt"
+	"github.com/stretchr/testify/assert"
 	"testing"
 )
 
 func TestDefaultUsername(t *testing.T) {
-	fmt.Println(defaultUsername())
+	name := defaultUsername()
+	assert.LessOrEqual(t, len(name), 32)
 }
