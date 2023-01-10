@@ -1,5 +1,58 @@
 basePath: /api
 definitions:
+  auth.LoginBody:
+    properties:
+      email:
+        type: string
+      password:
+        minLength: 8
+        type: string
+      username:
+        maxLength: 32
+        type: string
+    required:
+    - password
+    type: object
+  auth.MessageResponse:
+    properties:
+      message:
+        type: string
+    type: object
+  auth.RefreshBody:
+    properties:
+      refresh_token:
+        type: string
+    required:
+    - refresh_token
+    type: object
+  auth.RegisterBody:
+    properties:
+      email:
+        type: string
+      password:
+        minLength: 8
+        type: string
+      tel:
+        type: string
+      tenant_area_id:
+        type: integer
+      tenant_id:
+        type: integer
+      username:
+        maxLength: 32
+        type: string
+    required:
+    - email
+    - password
+    - tenant_id
+    type: object
+  auth.TokenResponse:
+    properties:
+      access_token:
+        type: string
+      refresh_token:
+        type: string
+    type: object
   category.CreateModel:
     properties:
       description:
@@ -65,31 +118,21 @@ definitions:
       time_updated:
         type: string
       type:
-        type: integer
-      user:
-        $ref: '#/definitions/models.User'
+        $ref: '#/definitions/models.ProductType'
       user_id:
         type: integer
     type: object
-  models.User:
-    properties:
-      avatar:
-        type: string
-      description:
-        type: string
-      email:
-        type: string
-      id:
-        type: integer
-      name:
-        type: string
-      password:
-        type: string
-      time_created:
-        type: string
-      time_updated:
-        type: string
-    type: object
+  models.ProductType:
+    enum:
+    - -1
+    - 1
+    type: integer
+    x-enum-comments:
+      ProductTypeAsk: sell
+      ProductTypeBid: buy
+    x-enum-varnames:
+    - ProductTypeBid
+    - ProductTypeAsk
   product.CreateModel:
     properties:
       description:
@@ -101,7 +144,7 @@ definitions:
       price:
         type: number
       type:
-        type: integer
+        $ref: '#/definitions/models.ProductType'
     type: object
   product.ModifyModel:
     properties:
@@ -116,7 +159,7 @@ definitions:
       price:
         type: number
       type:
-        type: integer
+        $ref: '#/definitions/models.ProductType'
     type: object
 info:
   contact:
@@ -301,6 +344,26 @@ paths:
       summary: Modify A Category
       tags:
       - Category
+  /login:
+    post:
+      description: use email and password to get jwt tokens, valid user only
+      parameters:
+      - description: json
+        in: body
+        name: json
+        required: true
+        schema:
+          $ref: '#/definitions/auth.LoginBody'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/auth.TokenResponse'
+      summary: Login
+      tags:
+      - Auth
   /products/{id}:
     delete:
       parameters:
@@ -357,6 +420,85 @@ paths:
       summary: Modify a product
       tags:
       - Product
+  /refresh:
+    post:
+      description: use refresh token to refresh tokens
+      parameters:
+      - description: json
+        in: body
+        name: json
+        required: true
+        schema:
+          $ref: '#/definitions/auth.RefreshBody'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/auth.TokenResponse'
+      summary: Refresh Token
+      tags:
+      - Auth
+  /register:
+    post:
+      parameters:
+      - description: json
+        in: body
+        name: json
+        required: true
+        schema:
+          $ref: '#/definitions/auth.RegisterBody'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/auth.MessageResponse'
+      summary: Register
+      tags:
+      - Auth
+  /users/{id}/activate:
+    get:
+      description: clicks the link in the email to activate the user
+      parameters:
+      - description: user id
+        in: path
+        name: id
+        required: true
+        type: integer
+      - in: query
+        name: code
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/auth.TokenResponse'
+      summary: Activate
+      tags:
+      - Auth
+  /validate:
+    post:
+      description: send validation email to user
+      parameters:
+      - in: query
+        name: email
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/auth.MessageResponse'
+      summary: Validate By Email
+      tags:
+      - Auth
 securityDefinitions:
   ApiKeyAuth:
     in: header

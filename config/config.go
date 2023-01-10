@@ -6,11 +6,20 @@ import (
 )
 
 type MyConfig struct {
-	Mode  string `envDefault:"dev" env:"MODE"`
-	Debug bool   `envDefault:"false" env:"DEBUG"`
+	SiteName string `env:"SITE_NAME" envDefault:"可易"`
+	BaseURL  string `env:"BASE_URL" envDefault:"http://localhost:8000"`
+	Mode     string `env:"MODE" envDefault:"dev"`
+	Debug    bool   `env:"DEBUG" envDefault:"false"`
 	// example: user:pass@tcp(127.0.0.1:3306)/dbname?parseTime=true
 	// for more detail, see https://github.com/go-sql-driver/mysql#dsn-data-source-name
-	DbUrl string `envDefault:"" env:"DB_URL"`
+	DbUrl        string `env:"DB_URL" envDefault:""`
+	RedisURL     string `env:"REDIS_URL" envDefault:""` // redis:6379
+	SecretKey    string `env:"SECRET_KEY" envDefault:""`
+	SmtpHost     string `env:"SMTP_HOST" envDefault:""`
+	SmtpPort     int    `env:"SMTP_PORT" envDefault:"587"`
+	SmtpUser     string `env:"SMTP_USER" envDefault:""`
+	SmtpPassword string `env:"SMTP_PASSWORD" envDefault:""`
+	FromEmail    string `env:"FROM_EMAIL" envDefault:""`
 }
 
 var Config MyConfig
@@ -23,6 +32,12 @@ func initConfig() { // load config from environment variables
 	}
 	if Config.Mode != "production" {
 		Config.Debug = true
+	}
+	if Config.SecretKey == "" {
+		fmt.Println("secret key not set!!!")
+	}
+	if Config.FromEmail == "" {
+		Config.FromEmail = Config.SmtpUser
 	}
 }
 

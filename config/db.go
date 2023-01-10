@@ -2,12 +2,11 @@ package config
 
 import (
 	"fmt"
-	"os"
-
 	"gorm.io/driver/mysql"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 	"gorm.io/gorm/schema"
+	"os"
 )
 
 var DB *gorm.DB
@@ -24,6 +23,7 @@ var gormConfig = &gorm.Config{
 		SingularTable: true, // use singular table name, table for `User` would be `user` with this option enabled
 	},
 	PrepareStmt: true, // use PrepareStmt for `Save`, `Update` and `Delete`
+	//DisableForeignKeyConstraintWhenMigrating: true,
 }
 
 func mysqlDB() (*gorm.DB, error) {

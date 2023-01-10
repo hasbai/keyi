@@ -41,7 +41,7 @@ func init() {
 	})
 }
 
-func Validate(model any) error {
+func _validate(model any) error {
 	errors := validate.Struct(model)
 	if errors != nil {
 		var errorDetail ErrorDetail
@@ -68,7 +68,7 @@ func ValidateQuery(c *fiber.Ctx, model any) error {
 	if err != nil {
 		return err
 	}
-	return Validate(model)
+	return _validate(model)
 }
 
 func ValidateBody(c *fiber.Ctx, model any) error {
@@ -80,5 +80,5 @@ func ValidateBody(c *fiber.Ctx, model any) error {
 	if err != nil {
 		return err
 	}
-	return Validate(model)
+	return _validate(model)
 }

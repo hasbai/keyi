@@ -79,5 +79,10 @@ func MyErrorHandler(ctx *fiber.Ctx, err error) error {
 		}
 	}
 
+	//if httpError.Code == 500 && config.Config.Debug {
+	//	// log error
+	//	debug.PrintStack()
+	//}
+
 	return ctx.Status(httpError.Code).JSON(&httpError)
 }

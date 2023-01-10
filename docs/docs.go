@@ -284,6 +284,37 @@ const docTemplate = `{
                 }
             }
         },
+        "/login": {
+            "post": {
+                "description": "use email and password to get jwt tokens, valid user only",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Login",
+                "parameters": [
+                    {
+                        "description": "json",
+                        "name": "json",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/auth.LoginBody"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/auth.TokenResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/products/{id}": {
             "get": {
                 "produces": [
@@ -369,9 +400,211 @@ const docTemplate = `{
                     }
                 }
             }
+        },
+        "/refresh": {
+            "post": {
+                "description": "use refresh token to refresh tokens",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Refresh Token",
+                "parameters": [
+                    {
+                        "description": "json",
+                        "name": "json",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/auth.RefreshBody"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/auth.TokenResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/register": {
+            "post": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Register",
+                "parameters": [
+                    {
+                        "description": "json",
+                        "name": "json",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/auth.RegisterBody"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/auth.MessageResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/users/{id}/activate": {
+            "get": {
+                "description": "clicks the link in the email to activate the user",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Activate",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "user id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "name": "code",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/auth.TokenResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/validate": {
+            "post": {
+                "description": "send validation email to user",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Validate By Email",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "name": "email",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/auth.MessageResponse"
+                        }
+                    }
+                }
+            }
         }
     },
     "definitions": {
+        "auth.LoginBody": {
+            "type": "object",
+            "required": [
+                "password"
+            ],
+            "properties": {
+                "email": {
+                    "type": "string"
+                },
+                "password": {
+                    "type": "string",
+                    "minLength": 8
+                },
+                "username": {
+                    "type": "string",
+                    "maxLength": 32
+                }
+            }
+        },
+        "auth.MessageResponse": {
+            "type": "object",
+            "properties": {
+                "message": {
+                    "type": "string"
+                }
+            }
+        },
+        "auth.RefreshBody": {
+            "type": "object",
+            "required": [
+                "refresh_token"
+            ],
+            "properties": {
+                "refresh_token": {
+                    "type": "string"
+                }
+            }
+        },
+        "auth.RegisterBody": {
+            "type": "object",
+            "required": [
+                "email",
+                "password",
+                "tenant_id"
+            ],
+            "properties": {
+                "email": {
+                    "type": "string"
+                },
+                "password": {
+                    "type": "string",
+                    "minLength": 8
+                },
+                "tel": {
+                    "type": "string"
+                },
+                "tenant_area_id": {
+                    "type": "integer"
+                },
+                "tenant_id": {
+                    "type": "integer"
+                },
+                "username": {
+                    "type": "string",
+                    "maxLength": 32
+                }
+            }
+        },
+        "auth.TokenResponse": {
+            "type": "object",
+            "properties": {
+                "access_token": {
+                    "type": "string"
+                },
+                "refresh_token": {
+                    "type": "string"
+                }
+            }
+        },
         "category.CreateModel": {
             "type": "object",
             "required": [
@@ -469,44 +702,27 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "type": {
-                    "type": "integer"
-                },
-                "user": {
-                    "$ref": "#/definitions/models.User"
+                    "$ref": "#/definitions/models.ProductType"
                 },
                 "user_id": {
                     "type": "integer"
                 }
             }
         },
-        "models.User": {
-            "type": "object",
-            "properties": {
-                "avatar": {
-                    "type": "string"
-                },
-                "description": {
-                    "type": "string"
-                },
-                "email": {
-                    "type": "string"
-                },
-                "id": {
-                    "type": "integer"
-                },
-                "name": {
-                    "type": "string"
-                },
-                "password": {
-                    "type": "string"
-                },
-                "time_created": {
-                    "type": "string"
-                },
-                "time_updated": {
-                    "type": "string"
-                }
-            }
+        "models.ProductType": {
+            "type": "integer",
+            "enum": [
+                -1,
+                1
+            ],
+            "x-enum-comments": {
+                "ProductTypeAsk": "sell",
+                "ProductTypeBid": "buy"
+            },
+            "x-enum-varnames": [
+                "ProductTypeBid",
+                "ProductTypeAsk"
+            ]
         },
         "product.CreateModel": {
             "type": "object",
@@ -524,7 +740,7 @@ const docTemplate = `{
                     "type": "number"
                 },
                 "type": {
-                    "type": "integer"
+                    "$ref": "#/definitions/models.ProductType"
                 }
             }
         },
@@ -547,7 +763,7 @@ const docTemplate = `{
                     "type": "number"
                 },
                 "type": {
-                    "type": "integer"
+                    "$ref": "#/definitions/models.ProductType"
                 }
             }
         }

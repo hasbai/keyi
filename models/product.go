@@ -9,7 +9,6 @@ type Product struct {
 	Type        ProductType `json:"type" gorm:"not null"`
 	Closed      bool        `json:"closed" gorm:"not null"`
 	UserID      int         `json:"user_id" gorm:"not null"`
-	User        User        `json:"user"`
 	CategoryID  int         `json:"category_id" gorm:"not null"`
 }
 
