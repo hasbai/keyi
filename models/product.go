@@ -8,8 +8,10 @@ type Product struct {
 	Price       float64     `json:"price" gorm:"not null"`
 	Type        ProductType `json:"type" gorm:"not null"`
 	Closed      bool        `json:"closed" gorm:"not null"`
-	UserID      int         `json:"user_id" gorm:"not null"`
+	UserID      int         `json:"user_id" gorm:"index;not null"`
 	CategoryID  int         `json:"category_id" gorm:"not null"`
+	// 由于目前租户较少，暂不添加索引
+	TenantID int `json:"tenant_id" gorm:"not null"`
 }
 
 type ProductType = int8

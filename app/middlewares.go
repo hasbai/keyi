@@ -1,13 +1,12 @@
 package app
 
 import (
-	"keyi/config"
-	"strconv"
-
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/logger"
 	"github.com/gofiber/fiber/v2/middleware/pprof"
 	"github.com/gofiber/fiber/v2/middleware/recover"
+	"keyi/auth"
+	"keyi/config"
 )
 
 func RegisterMiddlewares(app *fiber.App) {
@@ -22,18 +21,23 @@ func RegisterMiddlewares(app *fiber.App) {
 }
 
 func getUserID(c *fiber.Ctx) error {
-	var userID int
-	var err error
-
-	userID, err = strconv.Atoi(c.Get("X-Consumer-Username"))
-	if err != nil {
-		if config.Config.Debug {
-			userID = 1
-		}
-		// do not return error if user is not logged in
+	authorization := c.Get("Authorization", "")
+	if authorization == "" { // token can be in either header or cookie
+		authorization = c.Cookies("access")
 	}
 
-	c.Locals("userID", userID)
+	var claims *auth.MyClaims
+	var err error
+	if len(authorization) < 7 {
+		claims = &auth.MyClaims{}
+	} else {
+		claims, err = auth.ParseToken(authorization[7:]) // extract "Bearer "
+		if err != nil {
+			return err
+		}
+	}
+
+	c.Locals("claims", claims)
 
 	return c.Next()
 }

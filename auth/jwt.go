@@ -32,17 +32,18 @@ var (
 
 type MyClaims struct {
 	jwt.RegisteredClaims
-	IsValid      bool      `json:"is_valid"`
-	TenantID     int       `json:"tenant_id"`
-	TenantAreaID int       `json:"tenant_area_id"`
-	Type         TokenType `json:"type"`
-}
-
-type TokenInfo struct {
-	Email        string `json:"email"`
+	UID          int    `json:"uid"` // user id
 	IsValid      bool   `json:"is_valid"`
 	TenantID     int    `json:"tenant_id"`
 	TenantAreaID int    `json:"tenant_area_id"`
+	Type         string `json:"type"`
+}
+
+type TokenInfo struct {
+	UserID       int  `json:"user_id"`
+	IsValid      bool `json:"is_valid"`
+	TenantID     int  `json:"tenant_id"`
+	TenantAreaID int  `json:"tenant_area_id"`
 }
 
 type HasTokenInfo interface {
@@ -51,7 +52,7 @@ type HasTokenInfo interface {
 
 func (t *MyClaims) GetTokenInfo() *TokenInfo {
 	return &TokenInfo{
-		Email:        t.Subject,
+		UserID:       t.UID,
 		IsValid:      t.IsValid,
 		TenantID:     t.TenantID,
 		TenantAreaID: t.TenantAreaID,
@@ -65,12 +66,12 @@ func generateToken(info *TokenInfo, tokenType TokenTypeStruct) (string, error) {
 			IssuedAt:  jwt.NewNumericDate(time.Now()),
 			NotBefore: jwt.NewNumericDate(time.Now()),
 			Issuer:    config.Config.SiteName,
-			Subject:   info.Email,
 		},
 		Type:         tokenType.TokenType,
 		TenantID:     info.TenantID,
 		TenantAreaID: info.TenantAreaID,
 		IsValid:      info.IsValid,
+		UID:          info.UserID,
 	}
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claim)
 	return token.SignedString([]byte(config.Config.SecretKey))
@@ -101,5 +102,5 @@ func ParseToken(tokenString string) (*MyClaims, error) {
 }
 
 func keyFunc(token *jwt.Token) (i interface{}, err error) {
-	return config.Config.SecretKey, nil
+	return []byte(config.Config.SecretKey), nil
 }

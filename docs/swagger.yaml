@@ -113,6 +113,9 @@ definitions:
         type: string
       price:
         type: number
+      tenant_id:
+        description: 由于目前租户较少，暂不添加索引
+        type: integer
       time_created:
         type: string
       time_updated:
@@ -136,30 +139,55 @@ definitions:
   product.CreateModel:
     properties:
       description:
+        maxLength: 256
         type: string
       images:
         $ref: '#/definitions/models.JSON'
       name:
+        maxLength: 32
         type: string
       price:
+        minimum: 0
         type: number
+      tenant_id:
+        type: integer
       type:
-        $ref: '#/definitions/models.ProductType'
+        allOf:
+        - $ref: '#/definitions/models.ProductType'
+        enum:
+        - -1
+        - 1
+    required:
+    - name
+    - price
+    - tenant_id
+    - type
     type: object
   product.ModifyModel:
     properties:
       category_id:
         type: integer
+      closed:
+        type: boolean
       description:
+        maxLength: 256
         type: string
       images:
         $ref: '#/definitions/models.JSON'
       name:
+        maxLength: 32
         type: string
       price:
+        minimum: 0
         type: number
+      tenant_id:
+        type: integer
       type:
-        $ref: '#/definitions/models.ProductType'
+        allOf:
+        - $ref: '#/definitions/models.ProductType'
+        enum:
+        - -1
+        - 1
     type: object
 info:
   contact:
@@ -256,6 +284,8 @@ paths:
             items:
               $ref: '#/definitions/models.Product'
             type: array
+      security:
+      - ApiKeyAuth: []
       summary: List Products of a User
       tags:
       - Product
@@ -279,6 +309,8 @@ paths:
           description: Created
           schema:
             $ref: '#/definitions/models.Product'
+      security:
+      - ApiKeyAuth: []
       summary: Add a product
       tags:
       - Product
@@ -377,6 +409,8 @@ paths:
       responses:
         "204":
           description: No Content
+      security:
+      - ApiKeyAuth: []
       summary: Set a product as closed.
       tags:
       - Product
@@ -417,6 +451,8 @@ paths:
           description: Created
           schema:
             $ref: '#/definitions/models.Product'
+      security:
+      - ApiKeyAuth: []
       summary: Modify a product
       tags:
       - Product

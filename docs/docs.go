@@ -90,6 +90,11 @@ const docTemplate = `{
         },
         "/categories/{category_id}/products": {
             "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
                 "produces": [
                     "application/json"
                 ],
@@ -154,6 +159,11 @@ const docTemplate = `{
                 }
             },
             "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
                 "produces": [
                     "application/json"
                 ],
@@ -343,6 +353,11 @@ const docTemplate = `{
                 }
             },
             "put": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
                 "produces": [
                     "application/json"
                 ],
@@ -378,6 +393,11 @@ const docTemplate = `{
                 }
             },
             "delete": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
                 "produces": [
                     "application/json"
                 ],
@@ -695,6 +715,10 @@ const docTemplate = `{
                 "price": {
                     "type": "number"
                 },
+                "tenant_id": {
+                    "description": "由于目前租户较少，暂不添加索引",
+                    "type": "integer"
+                },
                 "time_created": {
                     "type": "string"
                 },
@@ -726,21 +750,41 @@ const docTemplate = `{
         },
         "product.CreateModel": {
             "type": "object",
+            "required": [
+                "name",
+                "price",
+                "tenant_id",
+                "type"
+            ],
             "properties": {
                 "description": {
-                    "type": "string"
+                    "type": "string",
+                    "maxLength": 256
                 },
                 "images": {
                     "$ref": "#/definitions/models.JSON"
                 },
                 "name": {
-                    "type": "string"
+                    "type": "string",
+                    "maxLength": 32
                 },
                 "price": {
-                    "type": "number"
+                    "type": "number",
+                    "minimum": 0
+                },
+                "tenant_id": {
+                    "type": "integer"
                 },
                 "type": {
-                    "$ref": "#/definitions/models.ProductType"
+                    "enum": [
+                        -1,
+                        1
+                    ],
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/models.ProductType"
+                        }
+                    ]
                 }
             }
         },
@@ -750,20 +794,37 @@ const docTemplate = `{
                 "category_id": {
                     "type": "integer"
                 },
+                "closed": {
+                    "type": "boolean"
+                },
                 "description": {
-                    "type": "string"
+                    "type": "string",
+                    "maxLength": 256
                 },
                 "images": {
                     "$ref": "#/definitions/models.JSON"
                 },
                 "name": {
-                    "type": "string"
+                    "type": "string",
+                    "maxLength": 32
                 },
                 "price": {
-                    "type": "number"
+                    "type": "number",
+                    "minimum": 0
+                },
+                "tenant_id": {
+                    "type": "integer"
                 },
                 "type": {
-                    "$ref": "#/definitions/models.ProductType"
+                    "enum": [
+                        -1,
+                        1
+                    ],
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/models.ProductType"
+                        }
+                    ]
                 }
             }
         }

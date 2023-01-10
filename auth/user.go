@@ -22,7 +22,7 @@ type User struct {
 
 func (u *User) GetTokenInfo() *TokenInfo {
 	return &TokenInfo{
-		Email:        u.Email,
+		UserID:       u.ID,
 		IsValid:      u.IsValid,
 		TenantID:     u.TenantID,
 		TenantAreaID: u.TenantAreaID,

@@ -2,6 +2,7 @@ package product
 
 import (
 	"github.com/gofiber/fiber/v2"
+	"keyi/auth"
 	. "keyi/models"
 	. "keyi/utils"
 )
@@ -31,6 +32,7 @@ func GetProduct(c *fiber.Ctx) error {
 // @Summary List Products of a User
 // @Tags Product
 // @Produce application/json
+// @Security ApiKeyAuth
 // @Param object query Query false "query"
 // @Param category_id path int true "category_id"
 // @Router /categories/{category_id}/products [get]
@@ -49,6 +51,7 @@ func ListProducts(c *fiber.Ctx) error {
 
 	var products []Product
 	query.BaseQuery().
+		Where("tenant_id = ?", c.Locals("claims").(*auth.MyClaims).TenantID).
 		Where("category_id = ?", categoryID).
 		Where("closed = ?", false).
 		Find(&products)
@@ -60,6 +63,7 @@ func ListProducts(c *fiber.Ctx) error {
 // @Summary Add a product
 // @Tags Product
 // @Produce application/json
+// @Security ApiKeyAuth
 // @Param json body CreateModel true "json"
 // @Param category_id path int true "category_id"
 // @Router /categories/{category_id}/products [post]
@@ -83,7 +87,7 @@ func AddProduct(c *fiber.Ctx) error {
 		Price:       body.Price,
 		Type:        body.Type,
 		CategoryID:  categoryID,
-		UserID:      c.Locals("userID").(int),
+		UserID:      c.Locals("claims").(auth.MyClaims).UID,
 	}
 
 	err = DB.Create(&product).Error
@@ -98,6 +102,7 @@ func AddProduct(c *fiber.Ctx) error {
 // @Summary Modify a product
 // @Tags Product
 // @Produce application/json
+// @Security ApiKeyAuth
 // @Param json body ModifyModel true "json"
 // @Param id path int true "product id"
 // @Router /products/{id} [put]
@@ -113,7 +118,7 @@ func ModifyProduct(c *fiber.Ctx) error {
 
 	var product Product
 	err = DB.
-		Where("user_id = ?", c.Locals("userID").(int)).
+		Where("user_id = ?", c.Locals("claims").(auth.MyClaims).UID).
 		Where("id = ?", id).
 		First(&product).Error
 	if err != nil {
@@ -132,6 +137,7 @@ func ModifyProduct(c *fiber.Ctx) error {
 // @Summary Set a product as closed.
 // @Tags Product
 // @Produce application/json
+// @Security ApiKeyAuth
 // @Router /products/{id} [delete]
 // @Param id path int true "product id"
 // @Success 204
@@ -140,7 +146,7 @@ func DeleteProduct(c *fiber.Ctx) error {
 
 	var product Product
 	err := DB.
-		Where("user_id = ?", c.Locals("userID").(int)).
+		Where("user_id = ?", c.Locals("claims").(auth.MyClaims).UID).
 		Where("id = ?", id).
 		First(&product).Error
 	if err != nil {
