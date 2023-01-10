@@ -3,6 +3,7 @@ package config
 import (
 	"fmt"
 	"gorm.io/driver/mysql"
+	"gorm.io/driver/postgres"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 	"gorm.io/gorm/schema"
@@ -12,11 +13,10 @@ import (
 var DB *gorm.DB
 
 const (
-	DBTypeMysql = iota
-	DBTypeSqlite
+	DBTypeMysql    = "mysql"
+	DBTypeSqlite   = "sqlite"
+	DBTypePostgres = "postgres"
 )
-
-var DBType uint
 
 var gormConfig = &gorm.Config{
 	NamingStrategy: schema.NamingStrategy{
@@ -26,14 +26,17 @@ var gormConfig = &gorm.Config{
 	//DisableForeignKeyConstraintWhenMigrating: true,
 }
 
+func postgresDB() (*gorm.DB, error) {
+	fmt.Println("db type: postgres")
+	return gorm.Open(postgres.Open(Config.DbUrl), gormConfig)
+}
+
 func mysqlDB() (*gorm.DB, error) {
-	DBType = DBTypeMysql
 	fmt.Println("db type: mysql")
 	return gorm.Open(mysql.Open(Config.DbUrl), gormConfig)
 }
 
 func sqliteDB() (*gorm.DB, error) {
-	DBType = DBTypeSqlite
 	fmt.Println("db type: sqlite")
 	err := os.MkdirAll("data", 0750)
 	if err != nil {
@@ -43,7 +46,6 @@ func sqliteDB() (*gorm.DB, error) {
 }
 
 func memoryDB() (*gorm.DB, error) {
-	DBType = DBTypeSqlite
 	fmt.Println("db type: memory")
 	return gorm.Open(sqlite.Open("file::memory:?cache=shared"), gormConfig)
 }
@@ -51,15 +53,22 @@ func memoryDB() (*gorm.DB, error) {
 func init() {
 	fmt.Println("init db config...")
 	var err error
-	if Config.DbUrl != "" {
-		DB, err = mysqlDB()
+
+	if Config.Mode == "test" {
+		DB, err = memoryDB()
 	} else {
-		if Config.Mode == "test" {
-			DB, err = memoryDB()
-		} else {
+		switch Config.DbType {
+		case DBTypeMysql:
+			DB, err = mysqlDB()
+		case DBTypeSqlite:
+			DB, err = sqliteDB()
+		case DBTypePostgres:
+			DB, err = postgresDB()
+		default:
 			DB, err = sqliteDB()
 		}
 	}
+
 	if Config.Debug {
 		DB = DB.Debug()
 	}

@@ -12,6 +12,7 @@ type MyConfig struct {
 	Debug    bool   `env:"DEBUG" envDefault:"false"`
 	// example: user:pass@tcp(127.0.0.1:3306)/dbname?parseTime=true
 	// for more detail, see https://github.com/go-sql-driver/mysql#dsn-data-source-name
+	DbType       string `env:"DB_TYPE" envDefault:"sqlite"`
 	DbUrl        string `env:"DB_URL" envDefault:""`
 	RedisURL     string `env:"REDIS_URL" envDefault:""` // redis:6379
 	SecretKey    string `env:"SECRET_KEY" envDefault:""`
