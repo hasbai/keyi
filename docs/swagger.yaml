@@ -46,6 +46,29 @@ definitions:
     - password
     - tenant_id
     type: object
+  auth.Tenant:
+    properties:
+      domains:
+        description: separate by comma
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+      tenantAreas:
+        items:
+          $ref: '#/definitions/auth.TenantArea'
+        type: array
+    type: object
+  auth.TenantArea:
+    properties:
+      id:
+        type: integer
+      name:
+        type: string
+      tenant_id:
+        type: integer
+    type: object
   auth.TokenResponse:
     properties:
       access_token:
@@ -495,6 +518,21 @@ paths:
       summary: Register
       tags:
       - Auth
+  /tenants:
+    get:
+      description: List all tenants with areas each
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/auth.Tenant'
+            type: array
+      summary: List Tenants
+      tags:
+      - Tenant
   /users/{id}/activate:
     get:
       description: clicks the link in the email to activate the user

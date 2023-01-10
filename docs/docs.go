@@ -482,6 +482,29 @@ const docTemplate = `{
                 }
             }
         },
+        "/tenants": {
+            "get": {
+                "description": "List all tenants with areas each",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Tenant"
+                ],
+                "summary": "List Tenants",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/auth.Tenant"
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/users/{id}/activate": {
             "get": {
                 "description": "clicks the link in the email to activate the user",
@@ -611,6 +634,41 @@ const docTemplate = `{
                 "username": {
                     "type": "string",
                     "maxLength": 32
+                }
+            }
+        },
+        "auth.Tenant": {
+            "type": "object",
+            "properties": {
+                "domains": {
+                    "description": "separate by comma",
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "tenantAreas": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/auth.TenantArea"
+                    }
+                }
+            }
+        },
+        "auth.TenantArea": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "tenant_id": {
+                    "type": "integer"
                 }
             }
         },

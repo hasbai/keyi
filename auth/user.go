@@ -29,19 +29,6 @@ func (u *User) GetTokenInfo() *TokenInfo {
 	}
 }
 
-type Tenant struct {
-	ID          int    `gorm:"primarykey" json:"id"`
-	Name        string `json:"name" gorm:"size:32;unique;not null"`
-	Domains     string `json:"domains" gorm:"size:256"` // separate by comma
-	TenantAreas []TenantArea
-}
-
-type TenantArea struct {
-	ID       int    `gorm:"primarykey" json:"id"`
-	TenantID int    `json:"tenant_id"`
-	Name     string `json:"name" gorm:"size:32;unique;not null"`
-}
-
 func init() {
 	fmt.Println("init models for auth...")
 	err := models.DB.AutoMigrate(&User{}, &Tenant{}, &TenantArea{})
