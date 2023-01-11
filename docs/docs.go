@@ -296,7 +296,7 @@ const docTemplate = `{
         },
         "/login": {
             "post": {
-                "description": "use email and password to get jwt tokens, valid user only",
+                "description": "use wx code to get access token",
                 "produces": [
                     "application/json"
                 ],
@@ -454,6 +454,7 @@ const docTemplate = `{
         },
         "/register": {
             "post": {
+                "description": "Fill in user's information to complete registration",
                 "produces": [
                     "application/json"
                 ],
@@ -572,19 +573,11 @@ const docTemplate = `{
         "auth.LoginBody": {
             "type": "object",
             "required": [
-                "password"
+                "code"
             ],
             "properties": {
-                "email": {
+                "code": {
                     "type": "string"
-                },
-                "password": {
-                    "type": "string",
-                    "minLength": 8
-                },
-                "username": {
-                    "type": "string",
-                    "maxLength": 32
                 }
             }
         },
@@ -621,9 +614,6 @@ const docTemplate = `{
                 "password": {
                     "type": "string",
                     "minLength": 8
-                },
-                "tel": {
-                    "type": "string"
                 },
                 "tenant_area_id": {
                     "type": "integer"

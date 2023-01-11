@@ -7,16 +7,15 @@ import (
 
 type User struct {
 	models.BaseModel
-	Username     string     `json:"username" gorm:"size:32;unique;not null"`
-	Description  string     `json:"description" gorm:"size:256"`
+	Username     string     `json:"username" gorm:"size:32;not null"`
+	Description  string     `json:"description" gorm:"size:256;not null"`
 	Email        string     `json:"email" gorm:"size:64;unique;not null"`
-	Password     string     `json:"password" gorm:"size:64;not null"`
-	IsValid      bool       `json:"is_valid" gorm:"default:false"`
-	TEL          string     `json:"tel" gorm:"size:16"`
-	Avatar       string     `json:"avatar" gorm:"size:256"`
-	TenantID     int        `json:"tenant_id"`
+	OpenID       string     `json:"openid" gorm:"size:64;unique;not null"`
+	IsValid      bool       `json:"is_valid" gorm:"default:false;not null"`
+	Avatar       string     `json:"avatar" gorm:"size:256;not null"`
+	TenantID     int        `json:"tenant_id" gorm:"not null"`
 	Tenant       Tenant     `json:"tenant"`
-	TenantAreaID int        `json:"tenant_area_id"` // 0 is default area
+	TenantAreaID int        `json:"tenant_area_id" gorm:"not null"` // 0 is default area
 	TenantArea   TenantArea `json:"tenant_area"`
 }
 

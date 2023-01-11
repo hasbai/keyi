@@ -1,18 +1,22 @@
 package auth
 
 import (
+	"errors"
 	"fmt"
+	"github.com/goccy/go-json"
 	"github.com/gofiber/fiber/v2"
 	"golang.org/x/exp/slices"
+	"io"
 	"keyi/config"
 	. "keyi/models"
 	"keyi/utils"
+	"net/http"
 	"strings"
 )
 
 // Login
 // @Summary Login
-// @Description use email and password to get jwt tokens, valid user only
+// @Description use wx code to get access token
 // @Tags Auth
 // @Produce application/json
 // @Param json body LoginBody true "json"
@@ -25,22 +29,30 @@ func Login(c *fiber.Ctx) error {
 		return err
 	}
 
-	var user User
-	if body.Email != "" {
-		err = DB.Where("email = ?", body.Email).First(&user).Error
-	} else {
-		err = DB.Where("username = ?", body.Username).First(&user).Error
-	}
+	response, err := http.Get(fmt.Sprintf(
+		"https://api.weixin.qq.com/sns/jscode2session?appid=%s&secret=%s&js_code=%s&grant_type=authorization_code",
+		config.Config.AppID, config.Config.AppSecret, body.Code,
+	))
 	if err != nil {
-		return utils.BadRequest("user does not exist")
+		return errors.New("wx login failed, http request failed")
+	}
+	defer response.Body.Close()
+	// read response body
+	bodyBytes, err := io.ReadAll(response.Body)
+	if err != nil {
+		return errors.New("wx login failed, read response body failed")
+	}
+	var wxResponse WxResponse
+	err = json.Unmarshal(bodyBytes, &wxResponse)
+	if err != nil {
+		return errors.New("wx login failed, unmarshal response body failed")
+	}
+	if wxResponse.ErrorCode != 0 {
+		return errors.New("wx login failed, " + wxResponse.ErrorMsg)
 	}
 
-	if !user.IsValid {
-		return utils.BadRequest("user is not activated, please check your email")
-	}
-	if user.Password != body.Password {
-		return utils.BadRequest("password is incorrect")
-	}
+	var user User
+	DB.FirstOrCreate(&user, "open_id = ?", wxResponse.OpenID)
 
 	access, refresh, err := GenerateTokens(&user)
 	if err != nil {
@@ -89,6 +101,7 @@ func Refresh(c *fiber.Ctx) error {
 
 // Register
 // @Summary Register
+// @Description Fill in user's information to complete registration
 // @Tags Auth
 // @Produce application/json
 // @Param json body RegisterBody true "json"
@@ -107,34 +120,26 @@ func Register(c *fiber.Ctx) error {
 		return utils.BadRequest("email already registered, please login")
 	}
 
-	user := User{
-		Username:     body.Username,
-		Email:        body.Email,
-		Password:     body.Password,
-		TEL:          body.TEL,
-		TenantID:     body.TenantID,
-		TenantAreaID: body.TenantAreaID,
+	var user User
+	err = DB.First(&user, c.Locals("claims").(MyClaims).UID).Error
+	if err != nil {
+		return err
 	}
-	if user.Username == "" {
-		user.Username = utils.MD5(user.Email)
+
+	if body.Username == "" {
+		body.Username = utils.MD5(body.Email)
 	}
+	user.Email = body.Email
+	user.Username = body.Username
+	user.TenantID = body.TenantID
+	user.TenantAreaID = body.TenantAreaID
 
 	err = validateEmail(user)
 	if err != nil {
 		return err
 	}
 
-	err = DB.Create(&user).Error
-	if err != nil {
-		return err
-	}
-
-	err = sendEmail(c, user)
-	if err != nil {
-		return err
-	}
-
-	return nil
+	return sendEmail(c, user)
 }
 
 // Validate
@@ -268,15 +273,12 @@ type RegisterBody struct {
 	Username     string `json:"username" validate:"max=32"`
 	Email        string `json:"email" validate:"required,email"`
 	Password     string `json:"password" validate:"required,min=8"`
-	TEL          string `json:"tel"`
 	TenantID     int    `json:"tenant_id" validate:"required"`
 	TenantAreaID int    `json:"tenant_area_id"`
 }
 
 type LoginBody struct {
-	Username string `json:"username" validate:"max=32"`
-	Email    string `json:"email" validate:"email"`
-	Password string `json:"password" validate:"required,min=8"`
+	Code string `json:"code" validate:"required"`
 }
 
 type RefreshBody struct {
@@ -298,4 +300,12 @@ type TokenResponse struct {
 
 type MessageResponse struct {
 	Message string `json:"message"`
+}
+
+type WxResponse struct {
+	OpenID     string `json:"openid"`
+	SessionKey string `json:"session_key"`
+	UnionID    string `json:"unionid"`
+	ErrorMsg   string `json:"errmsg"`
+	ErrorCode  int    `json:"errcode"`
 }

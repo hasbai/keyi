@@ -2,16 +2,10 @@ basePath: /api
 definitions:
   auth.LoginBody:
     properties:
-      email:
-        type: string
-      password:
-        minLength: 8
-        type: string
-      username:
-        maxLength: 32
+      code:
         type: string
     required:
-    - password
+    - code
     type: object
   auth.MessageResponse:
     properties:
@@ -31,8 +25,6 @@ definitions:
         type: string
       password:
         minLength: 8
-        type: string
-      tel:
         type: string
       tenant_area_id:
         type: integer
@@ -401,7 +393,7 @@ paths:
       - Category
   /login:
     post:
-      description: use email and password to get jwt tokens, valid user only
+      description: use wx code to get access token
       parameters:
       - description: json
         in: body
@@ -501,6 +493,7 @@ paths:
       - Auth
   /register:
     post:
+      description: Fill in user's information to complete registration
       parameters:
       - description: json
         in: body

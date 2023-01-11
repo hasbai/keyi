@@ -6,10 +6,12 @@ import (
 )
 
 type MyConfig struct {
-	SiteName string `env:"SITE_NAME" envDefault:"可易"`
-	BaseURL  string `env:"BASE_URL" envDefault:"http://localhost:8000"`
-	Mode     string `env:"MODE" envDefault:"dev"`
-	Debug    bool   `env:"DEBUG" envDefault:"false"`
+	SiteName  string `env:"SITE_NAME" envDefault:"可易"`
+	BaseURL   string `env:"BASE_URL" envDefault:"http://localhost:8000"`
+	Mode      string `env:"MODE" envDefault:"dev"`
+	Debug     bool   `env:"DEBUG" envDefault:"false"`
+	AppID     string `env:"APP_ID" envDefault:""`
+	AppSecret string `env:"APP_SECRET" envDefault:""`
 	// example: user:pass@tcp(127.0.0.1:3306)/dbname?parseTime=true
 	// for more detail, see https://github.com/go-sql-driver/mysql#dsn-data-source-name
 	DbType       string `env:"DB_TYPE" envDefault:"sqlite"`
