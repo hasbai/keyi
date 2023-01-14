@@ -89,6 +89,8 @@ definitions:
     type: object
   models.Category:
     properties:
+      created_at:
+        type: string
       description:
         type: string
       id:
@@ -99,13 +101,8 @@ definitions:
         items:
           $ref: '#/definitions/models.Product'
         type: array
-      time_created:
+      updated_at:
         type: string
-      time_updated:
-        type: string
-    type: object
-  models.JSON:
-    additionalProperties: {}
     type: object
   models.MessageModel:
     properties:
@@ -118,12 +115,16 @@ definitions:
         type: integer
       closed:
         type: boolean
+      created_at:
+        type: string
       description:
         type: string
       id:
         type: integer
       images:
-        $ref: '#/definitions/models.JSON'
+        items:
+          type: string
+        type: array
       name:
         type: string
       price:
@@ -131,12 +132,23 @@ definitions:
       tenant_id:
         description: 由于目前租户较少，暂不添加索引
         type: integer
-      time_created:
-        type: string
-      time_updated:
-        type: string
       type:
         $ref: '#/definitions/models.ProductType'
+      updated_at:
+        type: string
+      user_id:
+        type: integer
+    type: object
+  models.ProductRecord:
+    properties:
+      created_at:
+        type: string
+      id:
+        type: integer
+      product_id:
+        type: integer
+      updated_at:
+        type: string
       user_id:
         type: integer
     type: object
@@ -157,7 +169,9 @@ definitions:
         maxLength: 256
         type: string
       images:
-        $ref: '#/definitions/models.JSON'
+        items:
+          type: string
+        type: array
       name:
         maxLength: 32
         type: string
@@ -188,7 +202,9 @@ definitions:
         maxLength: 256
         type: string
       images:
-        $ref: '#/definitions/models.JSON'
+        items:
+          type: string
+        type: array
       name:
         maxLength: 32
         type: string
@@ -471,6 +487,99 @@ paths:
       summary: Modify a product
       tags:
       - Product
+  /records/products:
+    delete:
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+      security:
+      - ApiKeyAuth: []
+      summary: Delete all product view records
+      tags:
+      - Record
+    get:
+      parameters:
+      - default: 0
+        description: offset of object array
+        in: query
+        minimum: 0
+        name: offset
+        type: integer
+      - default: id
+        description: SQL ORDER BY field
+        in: query
+        name: orderBy
+        type: string
+      - default: 10
+        description: length of object array
+        in: query
+        maximum: 30
+        minimum: 0
+        name: size
+        type: integer
+      - default: asc
+        description: Sort order
+        enum:
+        - asc
+        - desc
+        in: query
+        name: sort
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.Product'
+            type: array
+      security:
+      - ApiKeyAuth: []
+      summary: List View Records of a User
+      tags:
+      - Record
+  /records/products/{id}:
+    delete:
+      parameters:
+      - description: product id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+      security:
+      - ApiKeyAuth: []
+      summary: Delete a product view record
+      tags:
+      - Record
+    post:
+      description: Frontend should call this api each time user enters the detail
+        page of a product.
+      parameters:
+      - description: product id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/models.ProductRecord'
+      security:
+      - ApiKeyAuth: []
+      summary: Add a product to view record
+      tags:
+      - Record
   /refresh:
     post:
       description: use refresh token to refresh tokens

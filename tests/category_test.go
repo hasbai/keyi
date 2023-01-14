@@ -7,23 +7,6 @@ import (
 	"testing"
 )
 
-func init() {
-	categories := make([]Category, 10)
-	for i := 1; i <= 10; i++ {
-		categories[i-1].ID = i
-		categories[i-1].Name = strconv.Itoa(i)
-		categories[i-1].Description = strconv.Itoa(i)
-	}
-	holes := make([]Product, 10)
-	for i := 0; i < 10; i++ {
-		holes[i] = Product{
-			CategoryID: 1,
-		}
-	}
-	DB.Create(&categories)
-	DB.Create(&holes)
-}
-
 func TestGetCategory(t *testing.T) {
 	category := testAPIModel[Category](t, "get", "/api/categories/1", 200)
 	assert.Equal(t, 1, category.ID)

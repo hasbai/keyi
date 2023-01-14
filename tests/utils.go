@@ -2,12 +2,13 @@ package tests
 
 import (
 	"bytes"
+	"fmt"
 	"github.com/goccy/go-json"
 	"io/ioutil"
 	"keyi/app"
+	"keyi/auth"
 	. "keyi/models"
 	"net/http"
-	"strconv"
 	"strings"
 	"sync"
 	"testing"
@@ -22,12 +23,41 @@ type JsonData interface {
 
 var App = app.Create()
 
-var userIDMock = 0
-var userIDMockLock sync.Mutex
+type Token struct {
+	sync.Mutex
+	Token string
+}
 
-func resetUserIDMock() {
-	userIDMock = 0
-	userIDMockLock.Unlock()
+var token Token
+
+func init() {
+	generateToken(1)
+}
+
+func generateToken(id int) {
+	accessToken, _, err := auth.GenerateTokens(&auth.User{
+		BaseModel: BaseModel{
+			ID: id,
+		},
+		IsValid:      true,
+		TenantID:     1,
+		TenantAreaID: 0,
+	})
+	if err != nil {
+		panic("generate token error, " + err.Error())
+	}
+
+	token.Token = "Bearer " + accessToken
+}
+
+func setToken(id int) {
+	token.Lock()
+	generateToken(id)
+}
+
+func resetToken() {
+	generateToken(1)
+	token.Unlock()
 }
 
 // testCommon tests status code and returns response body in bytes
@@ -45,17 +75,17 @@ func testCommon(t *testing.T, method string, route string, statusCode int, data 
 		bytes.NewBuffer(requestData),
 	)
 	req.Header.Add("Content-Type", "application/json")
-	if userIDMock != 0 {
-		req.Header.Add("X-Consumer-Username", strconv.Itoa(userIDMock))
-	}
+	req.Header.Add("Authorization", token.Token)
 	assert.Nilf(t, err, "constructs http request")
 
 	res, err := App.Test(req, -1)
 	assert.Nilf(t, err, "perform request")
-	assert.Equalf(t, statusCode, res.StatusCode, "status code")
 
 	responseBody, err := ioutil.ReadAll(res.Body)
 	assert.Nilf(t, err, "decode response")
+	fmt.Println(string(responseBody))
+
+	assert.Equalf(t, statusCode, res.StatusCode, "status code")
 
 	return responseBody
 }

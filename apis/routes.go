@@ -3,6 +3,7 @@ package apis
 import (
 	"keyi/apis/category"
 	"keyi/apis/product"
+	"keyi/apis/record"
 	"keyi/auth"
 	_ "keyi/docs"
 
@@ -29,4 +30,5 @@ func RegisterRoutes(app *fiber.App) {
 	auth.RegisterRoutes(group)
 	product.RegisterRoutes(group)
 	category.RegisterRoutes(group)
+	record.RegisterRoutes(group)
 }

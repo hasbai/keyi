@@ -421,6 +421,151 @@ const docTemplate = `{
                 }
             }
         },
+        "/records/products": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Record"
+                ],
+                "summary": "List View Records of a User",
+                "parameters": [
+                    {
+                        "minimum": 0,
+                        "type": "integer",
+                        "default": 0,
+                        "description": "offset of object array",
+                        "name": "offset",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "default": "id",
+                        "description": "SQL ORDER BY field",
+                        "name": "orderBy",
+                        "in": "query"
+                    },
+                    {
+                        "maximum": 30,
+                        "minimum": 0,
+                        "type": "integer",
+                        "default": 10,
+                        "description": "length of object array",
+                        "name": "size",
+                        "in": "query"
+                    },
+                    {
+                        "enum": [
+                            "asc",
+                            "desc"
+                        ],
+                        "type": "string",
+                        "default": "asc",
+                        "description": "Sort order",
+                        "name": "sort",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.Product"
+                            }
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Record"
+                ],
+                "summary": "Delete all product view records",
+                "responses": {
+                    "204": {
+                        "description": "No Content"
+                    }
+                }
+            }
+        },
+        "/records/products/{id}": {
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Frontend should call this api each time user enters the detail page of a product.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Record"
+                ],
+                "summary": "Add a product to view record",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "product id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/models.ProductRecord"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Record"
+                ],
+                "summary": "Delete a product view record",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "product id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No Content"
+                    }
+                }
+            }
+        },
         "/refresh": {
             "post": {
                 "description": "use refresh token to refresh tokens",
@@ -704,6 +849,9 @@ const docTemplate = `{
         "models.Category": {
             "type": "object",
             "properties": {
+                "created_at": {
+                    "type": "string"
+                },
                 "description": {
                     "type": "string"
                 },
@@ -719,17 +867,10 @@ const docTemplate = `{
                         "$ref": "#/definitions/models.Product"
                     }
                 },
-                "time_created": {
-                    "type": "string"
-                },
-                "time_updated": {
+                "updated_at": {
                     "type": "string"
                 }
             }
-        },
-        "models.JSON": {
-            "type": "object",
-            "additionalProperties": {}
         },
         "models.MessageModel": {
             "type": "object",
@@ -748,6 +889,9 @@ const docTemplate = `{
                 "closed": {
                     "type": "boolean"
                 },
+                "created_at": {
+                    "type": "string"
+                },
                 "description": {
                     "type": "string"
                 },
@@ -755,7 +899,10 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "images": {
-                    "$ref": "#/definitions/models.JSON"
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
                 },
                 "name": {
                     "type": "string"
@@ -767,14 +914,31 @@ const docTemplate = `{
                     "description": "由于目前租户较少，暂不添加索引",
                     "type": "integer"
                 },
-                "time_created": {
-                    "type": "string"
-                },
-                "time_updated": {
-                    "type": "string"
-                },
                 "type": {
                     "$ref": "#/definitions/models.ProductType"
+                },
+                "updated_at": {
+                    "type": "string"
+                },
+                "user_id": {
+                    "type": "integer"
+                }
+            }
+        },
+        "models.ProductRecord": {
+            "type": "object",
+            "properties": {
+                "created_at": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "product_id": {
+                    "type": "integer"
+                },
+                "updated_at": {
+                    "type": "string"
                 },
                 "user_id": {
                     "type": "integer"
@@ -810,7 +974,10 @@ const docTemplate = `{
                     "maxLength": 256
                 },
                 "images": {
-                    "$ref": "#/definitions/models.JSON"
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
                 },
                 "name": {
                     "type": "string",
@@ -850,7 +1017,10 @@ const docTemplate = `{
                     "maxLength": 256
                 },
                 "images": {
-                    "$ref": "#/definitions/models.JSON"
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
                 },
                 "name": {
                     "type": "string",
