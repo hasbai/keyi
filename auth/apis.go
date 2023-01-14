@@ -29,29 +29,13 @@ func Login(c *fiber.Ctx) error {
 		return err
 	}
 
-	response, err := http.Get(fmt.Sprintf(
-		"https://api.weixin.qq.com/sns/jscode2session?appid=%s&secret=%s&js_code=%s&grant_type=authorization_code",
-		config.Config.AppID, config.Config.AppSecret, body.Code,
-	))
+	wxResponse, err := login(body.Code)
 	if err != nil {
-		return errors.New("wx login failed, http request failed")
-	}
-	defer response.Body.Close()
-	// read response body
-	bodyBytes, err := io.ReadAll(response.Body)
-	if err != nil {
-		return errors.New("wx login failed, read response body failed")
-	}
-	var wxResponse WxResponse
-	err = json.Unmarshal(bodyBytes, &wxResponse)
-	if err != nil {
-		return errors.New("wx login failed, unmarshal response body failed")
-	}
-	if wxResponse.ErrorCode != 0 {
-		return errors.New("wx login failed, " + wxResponse.ErrorMsg)
+		return err
 	}
 
 	var user User
+	user.OpenID = wxResponse.OpenID
 	DB.FirstOrCreate(&user, "open_id = ?", wxResponse.OpenID)
 
 	access, refresh, err := GenerateTokens(&user)
@@ -59,10 +43,43 @@ func Login(c *fiber.Ctx) error {
 		return err
 	}
 
-	return c.Status(200).JSON(TokenResponse{
+	return c.JSON(TokenResponse{
 		AccessToken:  access,
 		RefreshToken: refresh,
 	})
+}
+
+func login(code string) (WxResponse, error) {
+	var wxResponse WxResponse
+
+	if config.Config.Debug {
+		wxResponse.OpenID = "test-openid"
+		return wxResponse, nil
+	}
+
+	response, err := http.Get(fmt.Sprintf(
+		"https://api.weixin.qq.com/sns/jscode2session?appid=%s&secret=%s&js_code=%s&grant_type=authorization_code",
+		config.Config.AppID, config.Config.AppSecret, code,
+	))
+	if err != nil {
+		return wxResponse, errors.New("wx login failed, http request failed")
+	}
+	defer response.Body.Close()
+
+	bodyBytes, err := io.ReadAll(response.Body)
+	if err != nil {
+		return wxResponse, errors.New("wx login failed, read response body failed")
+	}
+
+	err = json.Unmarshal(bodyBytes, &wxResponse)
+	if err != nil {
+		return wxResponse, errors.New("wx login failed, unmarshal response body failed")
+	}
+	if wxResponse.ErrorCode != 0 {
+		return wxResponse, errors.New("wx login failed, " + wxResponse.ErrorMsg)
+	}
+
+	return wxResponse, nil
 }
 
 // Refresh
