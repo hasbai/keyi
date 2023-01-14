@@ -4,7 +4,7 @@ type Product struct {
 	BaseModel
 	Name        string      `json:"name" gorm:"size:32;not null"`
 	Description string      `json:"description" gorm:"size:256;not null"`
-	Images      JSON        `json:"images"  gorm:"not null"`
+	Images      StringArray `json:"images"  gorm:"not null"`
 	Price       float64     `json:"price" gorm:"not null"`
 	Type        ProductType `json:"type" gorm:"not null"`
 	Closed      bool        `json:"closed" gorm:"not null"`

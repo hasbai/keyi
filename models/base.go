@@ -3,10 +3,8 @@ package models
 
 import (
 	"database/sql/driver"
-	"github.com/goccy/go-json"
-	"gorm.io/gorm"
-	"gorm.io/gorm/schema"
 	"keyi/config"
+	"strings"
 	"time"
 )
 
@@ -24,31 +22,18 @@ func (model BaseModel) GetID() int {
 	return model.ID
 }
 
-type JSON map[string]any
+type StringArray []string // separate by space
 
-func (t JSON) Value() (driver.Value, error) {
-	return json.Marshal(t)
+func (t StringArray) Value() (driver.Value, error) {
+	return strings.Join(t, " "), nil
 }
 
-func (t *JSON) Scan(input any) error {
-	return json.Unmarshal(input.([]byte), t)
-}
-
-// GormDataType gorm common data type
-func (JSON) GormDataType() string {
-	return "json"
-}
-
-// GormDBDataType gorm db data type
-//goland:noinspection GoUnusedParameter
-func (JSON) GormDBDataType(db *gorm.DB, field *schema.Field) string {
-	switch db.Dialector.Name() {
-	case "sqlite":
-		return "JSON"
-	case "mysql":
-		return "JSON"
-	case "postgres":
-		return "JSONB"
+func (t *StringArray) Scan(input any) error {
+	str := input.(string)
+	if str == "" {
+		*t = []string{}
+	} else {
+		*t = strings.Split(str, " ")
 	}
-	return ""
+	return nil
 }
