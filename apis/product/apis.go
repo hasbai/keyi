@@ -29,7 +29,8 @@ func GetProduct(c *fiber.Ctx) error {
 }
 
 // ListProducts
-// @Summary List Products of a User
+// @Summary List Products
+// @Description Return products that have the same talent_id as the user in a certain category
 // @Tags Product
 // @Produce application/json
 // @Security ApiKeyAuth
@@ -55,6 +56,97 @@ func ListProducts(c *fiber.Ctx) error {
 		Where("category_id = ?", categoryID).
 		Where("closed = ?", false).
 		Find(&products)
+
+	return c.JSON(products)
+}
+
+// ListUserProducts
+// @Summary List Products of a User
+// @Tags Product
+// @Produce application/json
+// @Security ApiKeyAuth
+// @Param object query Query false "query"
+// @Param id path int true "user id"
+// @Router /users/{id}/products [get]
+// @Success 200 {array} Product
+func ListUserProducts(c *fiber.Ctx) error {
+	var query ListUserProductsQuery
+	err := utils.ValidateQuery(c, &query)
+	if err != nil {
+		return err
+	}
+
+	userID, err := c.ParamsInt("id")
+	if err != nil {
+		return err
+	}
+
+	err = auth.OwnerOrPerm(c, auth.PAdmin, userID)
+	if err != nil {
+		return err
+	}
+
+	var products []Product
+	clause := query.BaseQuery().Where("user_id = ?", userID)
+	switch query.Closed {
+	case 1:
+		clause = clause.Where("closed = ?", false)
+	case -1:
+		clause = clause.Where("closed = ?", true)
+	}
+	if query.Type != ProductTypeAll {
+		clause = clause.Where("type = ?", query.Type)
+	}
+
+	clause.Find(&products)
+
+	return c.JSON(products)
+}
+
+// ListUserProductsType
+// @Summary List products that a user bought or sold
+// @Tags Product
+// @Produce application/json
+// @Security ApiKeyAuth
+// @Param object query Query false "query"
+// @Param id path int true "user id"
+// @Param type path string true "bought or sold"
+// @Router /users/{id}/products/{type} [get]
+// @Success 200 {array} Product
+func ListUserProductsType(c *fiber.Ctx) error {
+	var query Query
+	err := utils.ValidateQuery(c, &query)
+	if err != nil {
+		return err
+	}
+
+	userID, err := c.ParamsInt("id")
+	if err != nil {
+		return err
+	}
+
+	err = auth.OwnerOrPerm(c, auth.PAdmin, userID)
+	if err != nil {
+		return err
+	}
+
+	var products []Product
+	clause := query.BaseQuery().Where("closed = ?", true)
+
+	switch c.Params("type") {
+	case "sold":
+		clause = clause.
+			Where("type = ? AND user_id = ?", ProductTypeAsk, userID).
+			Or("type = ? AND partner_id = ?", ProductTypeBid, userID)
+	case "bought":
+		clause = clause.
+			Where("type = ? AND user_id = ?", ProductTypeBid, userID).
+			Or("type = ? AND partner_id = ?", ProductTypeAsk, userID)
+	default:
+		return utils.BadRequest("invalid type, should be bought or sold")
+	}
+
+	clause.Find(&products)
 
 	return c.JSON(products)
 }

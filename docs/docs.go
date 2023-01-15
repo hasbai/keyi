@@ -95,13 +95,14 @@ const docTemplate = `{
                         "ApiKeyAuth": []
                     }
                 ],
+                "description": "Return products that have the same talent_id as the user in a certain category",
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
                     "Product"
                 ],
-                "summary": "List Products of a User",
+                "summary": "List Products",
                 "parameters": [
                     {
                         "minimum": 0,
@@ -325,6 +326,172 @@ const docTemplate = `{
                 }
             }
         },
+        "/products/favorite": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Favorite"
+                ],
+                "summary": "List Favored Products of a User",
+                "parameters": [
+                    {
+                        "minimum": 0,
+                        "type": "integer",
+                        "default": 0,
+                        "description": "offset of object array",
+                        "name": "offset",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "default": "id",
+                        "description": "SQL ORDER BY field",
+                        "name": "orderBy",
+                        "in": "query"
+                    },
+                    {
+                        "maximum": 30,
+                        "minimum": 0,
+                        "type": "integer",
+                        "default": 10,
+                        "description": "length of object array",
+                        "name": "size",
+                        "in": "query"
+                    },
+                    {
+                        "enum": [
+                            "asc",
+                            "desc"
+                        ],
+                        "type": "string",
+                        "default": "desc",
+                        "description": "Sort order",
+                        "name": "sort",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.Product"
+                            }
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Favorite"
+                ],
+                "summary": "Delete all favored products",
+                "responses": {
+                    "204": {
+                        "description": "No Content"
+                    }
+                }
+            }
+        },
+        "/products/records": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Record"
+                ],
+                "summary": "List View Records of a User",
+                "parameters": [
+                    {
+                        "minimum": 0,
+                        "type": "integer",
+                        "default": 0,
+                        "description": "offset of object array",
+                        "name": "offset",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "default": "id",
+                        "description": "SQL ORDER BY field",
+                        "name": "orderBy",
+                        "in": "query"
+                    },
+                    {
+                        "maximum": 30,
+                        "minimum": 0,
+                        "type": "integer",
+                        "default": 10,
+                        "description": "length of object array",
+                        "name": "size",
+                        "in": "query"
+                    },
+                    {
+                        "enum": [
+                            "asc",
+                            "desc"
+                        ],
+                        "type": "string",
+                        "default": "desc",
+                        "description": "Sort order",
+                        "name": "sort",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.Product"
+                            }
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Record"
+                ],
+                "summary": "Delete all product view records",
+                "responses": {
+                    "204": {
+                        "description": "No Content"
+                    }
+                }
+            }
+        },
         "/products/{id}": {
             "get": {
                 "produces": [
@@ -421,8 +588,8 @@ const docTemplate = `{
                 }
             }
         },
-        "/records/products": {
-            "get": {
+        "/products/{id}/favorite": {
+            "post": {
                 "security": [
                     {
                         "ApiKeyAuth": []
@@ -432,55 +599,21 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Record"
+                    "Favorite"
                 ],
-                "summary": "List View Records of a User",
+                "summary": "Add a favored product",
                 "parameters": [
                     {
-                        "minimum": 0,
                         "type": "integer",
-                        "default": 0,
-                        "description": "offset of object array",
-                        "name": "offset",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "default": "id",
-                        "description": "SQL ORDER BY field",
-                        "name": "orderBy",
-                        "in": "query"
-                    },
-                    {
-                        "maximum": 30,
-                        "minimum": 0,
-                        "type": "integer",
-                        "default": 10,
-                        "description": "length of object array",
-                        "name": "size",
-                        "in": "query"
-                    },
-                    {
-                        "enum": [
-                            "asc",
-                            "desc"
-                        ],
-                        "type": "string",
-                        "default": "desc",
-                        "description": "Sort order",
-                        "name": "sort",
-                        "in": "query"
+                        "description": "product id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
                     }
                 ],
                 "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Product"
-                            }
-                        }
+                    "201": {
+                        "description": "Created"
                     }
                 }
             },
@@ -494,9 +627,18 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Record"
+                    "Favorite"
                 ],
-                "summary": "Delete all product view records",
+                "summary": "Delete a favored product",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "product id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
                 "responses": {
                     "204": {
                         "description": "No Content"
@@ -504,7 +646,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/records/products/{id}": {
+        "/products/{id}/records": {
             "post": {
                 "security": [
                     {
@@ -681,6 +823,155 @@ const docTemplate = `{
                         "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/auth.TokenResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/users/{id}/products": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Product"
+                ],
+                "summary": "List Products of a User",
+                "parameters": [
+                    {
+                        "minimum": 0,
+                        "type": "integer",
+                        "default": 0,
+                        "description": "offset of object array",
+                        "name": "offset",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "default": "id",
+                        "description": "SQL ORDER BY field",
+                        "name": "orderBy",
+                        "in": "query"
+                    },
+                    {
+                        "maximum": 30,
+                        "minimum": 0,
+                        "type": "integer",
+                        "default": 10,
+                        "description": "length of object array",
+                        "name": "size",
+                        "in": "query"
+                    },
+                    {
+                        "enum": [
+                            "asc",
+                            "desc"
+                        ],
+                        "type": "string",
+                        "default": "desc",
+                        "description": "Sort order",
+                        "name": "sort",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "user id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.Product"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/users/{id}/products/{type}": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Product"
+                ],
+                "summary": "List products that a user bought or sold",
+                "parameters": [
+                    {
+                        "minimum": 0,
+                        "type": "integer",
+                        "default": 0,
+                        "description": "offset of object array",
+                        "name": "offset",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "default": "id",
+                        "description": "SQL ORDER BY field",
+                        "name": "orderBy",
+                        "in": "query"
+                    },
+                    {
+                        "maximum": 30,
+                        "minimum": 0,
+                        "type": "integer",
+                        "default": 10,
+                        "description": "length of object array",
+                        "name": "size",
+                        "in": "query"
+                    },
+                    {
+                        "enum": [
+                            "asc",
+                            "desc"
+                        ],
+                        "type": "string",
+                        "default": "desc",
+                        "description": "Sort order",
+                        "name": "sort",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "user id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "bought or sold",
+                        "name": "type",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.Product"
+                            }
                         }
                     }
                 }
@@ -909,6 +1200,9 @@ const docTemplate = `{
                 "name": {
                     "type": "string"
                 },
+                "partner_id": {
+                    "type": "integer"
+                },
                 "price": {
                     "description": "Price in cent, $2.70 = 270",
                     "type": "integer"
@@ -952,15 +1246,18 @@ const docTemplate = `{
             "type": "integer",
             "enum": [
                 -1,
-                1
+                1,
+                0
             ],
             "x-enum-comments": {
+                "ProductTypeAll": "all",
                 "ProductTypeAsk": "sell",
                 "ProductTypeBid": "buy"
             },
             "x-enum-varnames": [
                 "ProductTypeBid",
-                "ProductTypeAsk"
+                "ProductTypeAsk",
+                "ProductTypeAll"
             ]
         },
         "product.CreateModel": {

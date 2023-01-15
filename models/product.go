@@ -12,6 +12,7 @@ type Product struct {
 	Type       ProductType `json:"type" gorm:"not null"`
 	Closed     bool        `json:"closed" gorm:"not null"`
 	UserID     int         `json:"user_id" gorm:"index;not null"`
+	PartnerID  int         `json:"partner_id" gorm:"index;not null"`
 	CategoryID int         `json:"category_id" gorm:"not null"`
 	// 由于目前租户较少，暂不添加索引
 	TenantID int `json:"tenant_id" gorm:"not null"`
@@ -22,8 +23,10 @@ type ProductType = int8
 const (
 	ProductTypeBid ProductType = -1 // buy
 	ProductTypeAsk ProductType = 1  // sell
+	ProductTypeAll ProductType = 0  // all
 )
 
+//goland:noinspection GoUnusedParameter
 func (p *Product) BeforeSave(tx *gorm.DB) (err error) {
 	if p.Images == nil {
 		p.Images = []string{}

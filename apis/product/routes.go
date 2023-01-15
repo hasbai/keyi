@@ -7,6 +7,8 @@ func RegisterRoutes(app fiber.Router) {
 	app.Get("/products/favorite", ListFavorites)
 	app.Get("/products/:id", GetProduct)
 	app.Get("/categories/:id/products", ListProducts)
+	app.Get("/users/:id/products", ListUserProducts)
+	app.Get("/users/:id/products/:type", ListUserProductsType)
 
 	app.Post("/categories/:id/products", AddProduct)
 	app.Post("/products/:id/favorite", AddFavorite)

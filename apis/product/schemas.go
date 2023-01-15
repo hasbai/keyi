@@ -24,3 +24,11 @@ type ModifyModel struct {
 	CategoryID  int         `json:"category_id"`
 	Closed      *bool       `json:"closed"`
 }
+
+type ListUserProductsQuery struct {
+	Query
+	// 0: all, 1: not closed, -1: closed
+	Closed int8 `query:"closed" validate:"min=-1,max=1"`
+	// 0: all, 1: sell, -1: buy
+	Type int8 `query:"type" validate:"min=-1,max=1"`
+}

@@ -128,6 +128,8 @@ definitions:
         type: array
       name:
         type: string
+      partner_id:
+        type: integer
       price:
         description: Price in cent, $2.70 = 270
         type: integer
@@ -158,13 +160,16 @@ definitions:
     enum:
     - -1
     - 1
+    - 0
     type: integer
     x-enum-comments:
+      ProductTypeAll: all
       ProductTypeAsk: sell
       ProductTypeBid: buy
     x-enum-varnames:
     - ProductTypeBid
     - ProductTypeAsk
+    - ProductTypeAll
   product.CreateModel:
     properties:
       description:
@@ -273,6 +278,8 @@ paths:
       - Category
   /categories/{category_id}/products:
     get:
+      description: Return products that have the same talent_id as the user in a certain
+        category
       parameters:
       - default: 0
         description: offset of object array
@@ -316,7 +323,7 @@ paths:
             type: array
       security:
       - ApiKeyAuth: []
-      summary: List Products of a User
+      summary: List Products
       tags:
       - Product
     post:
@@ -486,7 +493,135 @@ paths:
       summary: Modify a product
       tags:
       - Product
-  /records/products:
+  /products/{id}/favorite:
+    delete:
+      parameters:
+      - description: product id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+      security:
+      - ApiKeyAuth: []
+      summary: Delete a favored product
+      tags:
+      - Favorite
+    post:
+      parameters:
+      - description: product id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+      security:
+      - ApiKeyAuth: []
+      summary: Add a favored product
+      tags:
+      - Favorite
+  /products/{id}/records:
+    delete:
+      parameters:
+      - description: product id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+      security:
+      - ApiKeyAuth: []
+      summary: Delete a product view record
+      tags:
+      - Record
+    post:
+      description: Frontend should call this api each time user enters the detail
+        page of a product.
+      parameters:
+      - description: product id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/models.ProductRecord'
+      security:
+      - ApiKeyAuth: []
+      summary: Add a product to view record
+      tags:
+      - Record
+  /products/favorite:
+    delete:
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+      security:
+      - ApiKeyAuth: []
+      summary: Delete all favored products
+      tags:
+      - Favorite
+    get:
+      parameters:
+      - default: 0
+        description: offset of object array
+        in: query
+        minimum: 0
+        name: offset
+        type: integer
+      - default: id
+        description: SQL ORDER BY field
+        in: query
+        name: orderBy
+        type: string
+      - default: 10
+        description: length of object array
+        in: query
+        maximum: 30
+        minimum: 0
+        name: size
+        type: integer
+      - default: desc
+        description: Sort order
+        enum:
+        - asc
+        - desc
+        in: query
+        name: sort
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.Product'
+            type: array
+      security:
+      - ApiKeyAuth: []
+      summary: List Favored Products of a User
+      tags:
+      - Favorite
+  /products/records:
     delete:
       produces:
       - application/json
@@ -538,45 +673,6 @@ paths:
       security:
       - ApiKeyAuth: []
       summary: List View Records of a User
-      tags:
-      - Record
-  /records/products/{id}:
-    delete:
-      parameters:
-      - description: product id
-        in: path
-        name: id
-        required: true
-        type: integer
-      produces:
-      - application/json
-      responses:
-        "204":
-          description: No Content
-      security:
-      - ApiKeyAuth: []
-      summary: Delete a product view record
-      tags:
-      - Record
-    post:
-      description: Frontend should call this api each time user enters the detail
-        page of a product.
-      parameters:
-      - description: product id
-        in: path
-        name: id
-        required: true
-        type: integer
-      produces:
-      - application/json
-      responses:
-        "201":
-          description: Created
-          schema:
-            $ref: '#/definitions/models.ProductRecord'
-      security:
-      - ApiKeyAuth: []
-      summary: Add a product to view record
       tags:
       - Record
   /refresh:
@@ -657,6 +753,107 @@ paths:
       summary: Activate
       tags:
       - Auth
+  /users/{id}/products:
+    get:
+      parameters:
+      - default: 0
+        description: offset of object array
+        in: query
+        minimum: 0
+        name: offset
+        type: integer
+      - default: id
+        description: SQL ORDER BY field
+        in: query
+        name: orderBy
+        type: string
+      - default: 10
+        description: length of object array
+        in: query
+        maximum: 30
+        minimum: 0
+        name: size
+        type: integer
+      - default: desc
+        description: Sort order
+        enum:
+        - asc
+        - desc
+        in: query
+        name: sort
+        type: string
+      - description: user id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.Product'
+            type: array
+      security:
+      - ApiKeyAuth: []
+      summary: List Products of a User
+      tags:
+      - Product
+  /users/{id}/products/{type}:
+    get:
+      parameters:
+      - default: 0
+        description: offset of object array
+        in: query
+        minimum: 0
+        name: offset
+        type: integer
+      - default: id
+        description: SQL ORDER BY field
+        in: query
+        name: orderBy
+        type: string
+      - default: 10
+        description: length of object array
+        in: query
+        maximum: 30
+        minimum: 0
+        name: size
+        type: integer
+      - default: desc
+        description: Sort order
+        enum:
+        - asc
+        - desc
+        in: query
+        name: sort
+        type: string
+      - description: user id
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: bought or sold
+        in: path
+        name: type
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.Product'
+            type: array
+      security:
+      - ApiKeyAuth: []
+      summary: List products that a user bought or sold
+      tags:
+      - Product
   /validate:
     post:
       description: send validation email to user
