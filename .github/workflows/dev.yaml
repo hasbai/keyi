@@ -7,7 +7,19 @@ env:
   APP_NAME: keyi
 
 jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up Go
+        uses: actions/setup-go@v3
+        with:
+          go-version: '1.18'
+      - name: Test
+        run: go test -v ./...
+
   docker:
+    needs: test
     runs-on: ubuntu-latest
     steps:
       - name: Get tag version
