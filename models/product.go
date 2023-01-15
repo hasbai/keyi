@@ -30,3 +30,15 @@ func (p *Product) BeforeSave(tx *gorm.DB) (err error) {
 	}
 	return nil
 }
+
+type ProductRecord struct {
+	BaseModel
+	UserID    int `json:"user_id"    gorm:"index:product_record_uni,unique"`
+	ProductID int `json:"product_id" gorm:"index:product_record_uni,unique"`
+}
+
+type ProductFavorite struct {
+	BaseModel
+	UserID    int `json:"user_id"    gorm:"index:product_favorite_uni,unique"`
+	ProductID int `json:"product_id" gorm:"index:product_favorite_uni,unique"`
+}

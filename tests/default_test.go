@@ -37,6 +37,17 @@ func init() {
 		}
 	}
 	DB.Create(&records)
+
+	favorites := make([]ProductFavorite, 0, 6)
+	for _, uid := range []int{1, 2} {
+		for _, id := range []int{1, 3, 5} {
+			favorites = append(favorites, ProductFavorite{
+				UserID:    uid,
+				ProductID: id,
+			})
+		}
+	}
+	DB.Create(&favorites)
 }
 
 func TestIndex(t *testing.T) {
