@@ -101,7 +101,7 @@ func Refresh(c *fiber.Ctx) error {
 	if err != nil {
 		return err
 	}
-	if claims.Type != TokenTypeRefresh || !claims.IsValid {
+	if claims.Type != TokenTypeRefresh || !CheckPermission(claims, PUser) {
 		return utils.BadRequest("invalid refresh token")
 	}
 
@@ -272,7 +272,7 @@ func Activate(c *fiber.Ctx) error {
 		return utils.BadRequest("invalid code")
 	}
 
-	user.IsValid = true
+	user.Permission = AddPermission(&user, PUser)
 	DB.Save(&user)
 
 	access, refresh, err := GenerateTokens(&user)

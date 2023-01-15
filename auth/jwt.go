@@ -33,18 +33,18 @@ var (
 
 type MyClaims struct {
 	jwt.RegisteredClaims
-	UID          int    `json:"uid"` // user id
-	IsValid      bool   `json:"is_valid"`
-	TenantID     int    `json:"tenant_id"`
-	TenantAreaID int    `json:"tenant_area_id"`
-	Type         string `json:"type"`
+	UID          int        `json:"uid"` // user id
+	Permission   Permission `json:"permission"`
+	TenantID     int        `json:"tenant_id"`
+	TenantAreaID int        `json:"tenant_area_id"`
+	Type         string     `json:"type"`
 }
 
 type TokenInfo struct {
-	UserID       int  `json:"user_id"`
-	IsValid      bool `json:"is_valid"`
-	TenantID     int  `json:"tenant_id"`
-	TenantAreaID int  `json:"tenant_area_id"`
+	UserID       int        `json:"user_id"`
+	Permission   Permission `json:"permission"`
+	TenantID     int        `json:"tenant_id"`
+	TenantAreaID int        `json:"tenant_area_id"`
 }
 
 type HasTokenInfo interface {
@@ -54,10 +54,14 @@ type HasTokenInfo interface {
 func (t *MyClaims) GetTokenInfo() *TokenInfo {
 	return &TokenInfo{
 		UserID:       t.UID,
-		IsValid:      t.IsValid,
+		Permission:   t.Permission,
 		TenantID:     t.TenantID,
 		TenantAreaID: t.TenantAreaID,
 	}
+}
+
+func (t *MyClaims) GetPermission() Permission {
+	return t.Permission
 }
 
 func generateToken(info *TokenInfo, tokenType TokenTypeStruct) (string, error) {
@@ -71,7 +75,7 @@ func generateToken(info *TokenInfo, tokenType TokenTypeStruct) (string, error) {
 		Type:         tokenType.TokenType,
 		TenantID:     info.TenantID,
 		TenantAreaID: info.TenantAreaID,
-		IsValid:      info.IsValid,
+		Permission:   info.Permission,
 		UID:          info.UserID,
 	}
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claim)

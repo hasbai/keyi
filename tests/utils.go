@@ -39,7 +39,7 @@ func generateToken(id int) {
 		BaseModel: BaseModel{
 			ID: id,
 		},
-		IsValid:      true,
+		Permission:   auth.PUser,
 		TenantID:     1,
 		TenantAreaID: 0,
 	})

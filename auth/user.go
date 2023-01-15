@@ -11,7 +11,7 @@ type User struct {
 	Description  string     `json:"description" gorm:"size:256;not null"`
 	Email        string     `json:"email" gorm:"size:64;unique;not null"`
 	OpenID       string     `json:"openid" gorm:"size:64;unique;not null"`
-	IsValid      bool       `json:"is_valid" gorm:"default:false;not null"`
+	Permission   Permission `json:"permission" gorm:"not null"`
 	Avatar       string     `json:"avatar" gorm:"size:256;not null"`
 	TenantID     int        `json:"tenant_id" gorm:"not null"`
 	Tenant       Tenant     `json:"tenant"`
@@ -22,10 +22,14 @@ type User struct {
 func (u *User) GetTokenInfo() *TokenInfo {
 	return &TokenInfo{
 		UserID:       u.ID,
-		IsValid:      u.IsValid,
+		Permission:   u.Permission,
 		TenantID:     u.TenantID,
 		TenantAreaID: u.TenantAreaID,
 	}
+}
+
+func (u *User) GetPermission() Permission {
+	return u.Permission
 }
 
 func init() {
