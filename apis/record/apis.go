@@ -25,7 +25,7 @@ func ListRecords(c *fiber.Ctx) error {
 	var products []Product
 	DB.Limit(query.Size).Offset(query.Offset).Order("product_record.id desc").
 		Joins("INNER JOIN product_record ON product.id = product_record.product_id").
-		Where("product_record.user_id = ?", c.Locals("claims").(*auth.MyClaims).UID).
+		Where("product_record.user_id = ?", auth.GetClaims(c).UID).
 		Find(&products)
 
 	return c.JSON(products)
@@ -47,7 +47,7 @@ func AddRecord(c *fiber.Ctx) error {
 	}
 
 	record := ProductRecord{
-		UserID:    c.Locals("claims").(*auth.MyClaims).UID,
+		UserID:    auth.GetClaims(c).UID,
 		ProductID: id,
 	}
 
@@ -74,7 +74,7 @@ func DeleteRecord(c *fiber.Ctx) error {
 	}
 
 	err = DB.
-		Where("user_id = ?", c.Locals("claims").(*auth.MyClaims).UID).
+		Where("user_id = ?", auth.GetClaims(c).UID).
 		Where("product_id = ?", id).
 		Delete(&ProductRecord{}).Error
 	if err != nil {
@@ -93,7 +93,7 @@ func DeleteRecord(c *fiber.Ctx) error {
 // @Success 204
 func DeleteAllRecords(c *fiber.Ctx) error {
 	err := DB.
-		Where("user_id = ?", c.Locals("claims").(*auth.MyClaims).UID).
+		Where("user_id = ?", auth.GetClaims(c).UID).
 		Delete(&ProductRecord{}).Error
 	if err != nil {
 		return err

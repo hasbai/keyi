@@ -51,7 +51,7 @@ func ListProducts(c *fiber.Ctx) error {
 
 	var products []Product
 	query.BaseQuery().
-		Where("tenant_id = ?", c.Locals("claims").(*auth.MyClaims).TenantID).
+		Where("tenant_id = ?", auth.GetClaims(c).TenantID).
 		Where("category_id = ?", categoryID).
 		Where("closed = ?", false).
 		Find(&products)
@@ -87,7 +87,7 @@ func AddProduct(c *fiber.Ctx) error {
 		Price:       body.Price,
 		Type:        body.Type,
 		CategoryID:  categoryID,
-		UserID:      c.Locals("claims").(auth.MyClaims).UID,
+		UserID:      auth.GetClaims(c).UID,
 	}
 
 	err = DB.Create(&product).Error
@@ -118,7 +118,7 @@ func ModifyProduct(c *fiber.Ctx) error {
 
 	var product Product
 	err = DB.
-		Where("user_id = ?", c.Locals("claims").(auth.MyClaims).UID).
+		Where("user_id = ?", auth.GetClaims(c).UID).
 		Where("id = ?", id).
 		First(&product).Error
 	if err != nil {
@@ -146,7 +146,7 @@ func DeleteProduct(c *fiber.Ctx) error {
 
 	var product Product
 	err := DB.
-		Where("user_id = ?", c.Locals("claims").(auth.MyClaims).UID).
+		Where("user_id = ?", auth.GetClaims(c).UID).
 		Where("id = ?", id).
 		First(&product).Error
 	if err != nil {

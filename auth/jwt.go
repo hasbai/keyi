@@ -1,6 +1,7 @@
 package auth
 
 import (
+	"github.com/gofiber/fiber/v2"
 	"github.com/golang-jwt/jwt/v4"
 	"keyi/config"
 	. "keyi/utils"
@@ -101,6 +102,11 @@ func ParseToken(tokenString string) (*MyClaims, error) {
 	return nil, Unauthorized("invalid token")
 }
 
+//goland:noinspection GoUnusedParameter
 func keyFunc(token *jwt.Token) (i interface{}, err error) {
 	return []byte(config.Config.SecretKey), nil
+}
+
+func GetClaims(c *fiber.Ctx) *MyClaims {
+	return c.Locals("claims").(*MyClaims)
 }
