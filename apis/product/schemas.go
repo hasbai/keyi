@@ -8,9 +8,10 @@ type CreateModel struct {
 	Name        string      `json:"name" validate:"required,max=32"`
 	Description string      `json:"description" validate:"max=256"`
 	Images      StringArray `json:"images"`
-	Price       float64     `json:"price" validate:"required,min=0"`
-	Type        ProductType `json:"type" validate:"required,oneof=-1 1"`
-	TenantID    int         `json:"tenant_id" validate:"required"`
+	// Price in cent, $2.70 = 270
+	Price    int         `json:"price" validate:"required,min=0"`
+	Type     ProductType `json:"type" validate:"required,oneof=-1 1"`
+	TenantID int         `json:"tenant_id" validate:"required"`
 }
 
 type ModifyModel struct {

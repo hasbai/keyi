@@ -41,8 +41,9 @@ definitions:
   auth.Tenant:
     properties:
       domains:
-        description: separate by comma
-        type: string
+        items:
+          type: string
+        type: array
       id:
         type: integer
       name:
@@ -128,7 +129,8 @@ definitions:
       name:
         type: string
       price:
-        type: number
+        description: Price in cent, $2.70 = 270
+        type: integer
       tenant_id:
         description: 由于目前租户较少，暂不添加索引
         type: integer
@@ -176,8 +178,9 @@ definitions:
         maxLength: 32
         type: string
       price:
+        description: Price in cent, $2.70 = 270
         minimum: 0
-        type: number
+        type: integer
       tenant_id:
         type: integer
       type:

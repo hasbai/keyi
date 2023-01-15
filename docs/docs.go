@@ -776,8 +776,10 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "domains": {
-                    "description": "separate by comma",
-                    "type": "string"
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
                 },
                 "id": {
                     "type": "integer"
@@ -908,7 +910,8 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "price": {
-                    "type": "number"
+                    "description": "Price in cent, $2.70 = 270",
+                    "type": "integer"
                 },
                 "tenant_id": {
                     "description": "由于目前租户较少，暂不添加索引",
@@ -984,7 +987,8 @@ const docTemplate = `{
                     "maxLength": 32
                 },
                 "price": {
-                    "type": "number",
+                    "description": "Price in cent, $2.70 = 270",
+                    "type": "integer",
                     "minimum": 0
                 },
                 "tenant_id": {
