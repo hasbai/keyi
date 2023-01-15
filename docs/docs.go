@@ -133,7 +133,7 @@ const docTemplate = `{
                             "desc"
                         ],
                         "type": "string",
-                        "default": "asc",
+                        "default": "desc",
                         "description": "Sort order",
                         "name": "sort",
                         "in": "query"
@@ -466,7 +466,7 @@ const docTemplate = `{
                             "desc"
                         ],
                         "type": "string",
-                        "default": "asc",
+                        "default": "desc",
                         "description": "Sort order",
                         "name": "sort",
                         "in": "query"
@@ -1031,22 +1031,14 @@ const docTemplate = `{
                     "maxLength": 32
                 },
                 "price": {
-                    "type": "number",
+                    "type": "integer",
                     "minimum": 0
                 },
                 "tenant_id": {
                     "type": "integer"
                 },
                 "type": {
-                    "enum": [
-                        -1,
-                        1
-                    ],
-                    "allOf": [
-                        {
-                            "$ref": "#/definitions/models.ProductType"
-                        }
-                    ]
+                    "$ref": "#/definitions/models.ProductType"
                 }
             }
         }

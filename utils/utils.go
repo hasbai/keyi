@@ -3,9 +3,13 @@ package utils
 import (
 	"fmt"
 	"github.com/gofiber/fiber/v2"
+	"log"
 	"os"
 	"path"
+	"path/filepath"
 	"reflect"
+	"runtime"
+	"strings"
 )
 
 type CanPreprocess interface {
@@ -26,23 +30,34 @@ func Min[T numbers](x T, y T) T {
 	}
 }
 
-func getBasePath() string {
-	basePath := os.Getenv("BASE_PATH")
-	if basePath == "" {
-		Logger.Warn("BASE_PATH not set, relative path may be incorrect")
+// GetAbsPath get absolute path
+func GetAbsPath() string {
+	dir := getAbsPathByExecutable()
+	tmpDir, _ := filepath.EvalSymlinks(os.TempDir())
+	if strings.Contains(dir, tmpDir) {
+		return getAbsPathByCaller()
 	}
-	return basePath
+	return dir
 }
 
-func ToAbsolutePath(relativePath string) string {
-	if path.IsAbs(relativePath) {
-		return relativePath
+// getAbsPathByExecutable 获取当前执行文件绝对路径
+func getAbsPathByExecutable() string {
+	exePath, err := os.Executable()
+	if err != nil {
+		log.Fatal(err)
 	}
-	basePath := getBasePath()
-	if basePath == "" {
-		return relativePath
+	res, _ := filepath.EvalSymlinks(filepath.Dir(exePath))
+	return res
+}
+
+// getAbsPathByCaller 获取当前执行文件绝对路径（go run）
+func getAbsPathByCaller() string {
+	var abPath string
+	_, filename, _, ok := runtime.Caller(0)
+	if ok {
+		abPath = path.Dir(filename)
 	}
-	return path.Join(basePath, relativePath)
+	return abPath
 }
 
 // ToMap struct to map, skips zero value and panics if in is not a struct

@@ -10,10 +10,10 @@ type CanQuery interface {
 }
 
 type Query struct {
-	Size    int    `query:"size" default:"10" validate:"min=0,max=30"`    // length of object array
-	Offset  int    `query:"offset" default:"0" validate:"min=0"`          // offset of object array
-	Sort    string `query:"sort" default:"asc" validate:"oneof=asc desc"` // Sort order
-	OrderBy string `query:"order_by" default:"id"`                        // SQL ORDER BY field
+	Size    int    `query:"size" default:"10" validate:"min=0,max=30"`     // length of object array
+	Offset  int    `query:"offset" default:"0" validate:"min=0"`           // offset of object array
+	Sort    string `query:"sort" default:"desc" validate:"oneof=asc desc"` // Sort order
+	OrderBy string `query:"order_by" default:"id"`                         // SQL ORDER BY field
 }
 
 func (q *Query) BaseQuery() *gorm.DB {

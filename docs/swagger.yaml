@@ -213,15 +213,11 @@ definitions:
         type: string
       price:
         minimum: 0
-        type: number
+        type: integer
       tenant_id:
         type: integer
       type:
-        allOf:
-        - $ref: '#/definitions/models.ProductType'
-        enum:
-        - -1
-        - 1
+        $ref: '#/definitions/models.ProductType'
     type: object
 info:
   contact:
@@ -296,7 +292,7 @@ paths:
         minimum: 0
         name: size
         type: integer
-      - default: asc
+      - default: desc
         description: Sort order
         enum:
         - asc
@@ -522,7 +518,7 @@ paths:
         minimum: 0
         name: size
         type: integer
-      - default: asc
+      - default: desc
         description: Sort order
         enum:
         - asc

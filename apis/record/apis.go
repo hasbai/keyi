@@ -23,7 +23,7 @@ func ListRecords(c *fiber.Ctx) error {
 	}
 
 	var products []Product
-	DB.Limit(query.Size).Offset(query.Offset).Order("product_record.id desc").
+	DB.Limit(query.Size).Offset(query.Offset).Order("product_record.id "+query.Sort).
 		Joins("INNER JOIN product_record ON product.id = product_record.product_id").
 		Where("product_record.user_id = ?", auth.GetClaims(c).UID).
 		Find(&products)

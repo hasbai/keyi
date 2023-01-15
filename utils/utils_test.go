@@ -59,3 +59,7 @@ func TestToMap(t *testing.T) {
 		"ptr":  true,
 	}, m)
 }
+
+func TestGetAbsPath(t *testing.T) {
+	fmt.Println(GetAbsPath())
+}
