@@ -18,9 +18,9 @@ type ModifyModel struct {
 	Name        string      `json:"name" validate:"max=32"`
 	Description string      `json:"description" validate:"max=256"`
 	Images      StringArray `json:"images"`
-	Price       float64     `json:"price" validate:"min=0"`
-	Type        ProductType `json:"type" validate:"oneof=-1 1"`
+	Price       int         `json:"price" validate:"min=0"`
+	Type        ProductType `json:"type"`
 	TenantID    int         `json:"tenant_id"`
 	CategoryID  int         `json:"category_id"`
-	Closed      bool        `json:"closed"`
+	Closed      *bool       `json:"closed"`
 }

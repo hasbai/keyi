@@ -1,5 +1,7 @@
 package models
 
+import "gorm.io/gorm"
+
 type Product struct {
 	BaseModel
 	Name        string      `json:"name" gorm:"size:32;not null"`
@@ -21,3 +23,10 @@ const (
 	ProductTypeBid ProductType = -1 // buy
 	ProductTypeAsk ProductType = 1  // sell
 )
+
+func (p *Product) BeforeSave(tx *gorm.DB) (err error) {
+	if p.Images == nil {
+		p.Images = []string{}
+	}
+	return nil
+}

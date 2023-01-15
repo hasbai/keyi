@@ -4,7 +4,7 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"keyi/auth"
 	. "keyi/models"
-	. "keyi/utils"
+	"keyi/utils"
 )
 
 // GetProduct
@@ -39,7 +39,7 @@ func GetProduct(c *fiber.Ctx) error {
 // @Success 200 {array} Product
 func ListProducts(c *fiber.Ctx) error {
 	var query Query
-	err := ValidateQuery(c, &query)
+	err := utils.ValidateQuery(c, &query)
 	if err != nil {
 		return err
 	}
@@ -70,7 +70,7 @@ func ListProducts(c *fiber.Ctx) error {
 // @Success 201 {object} Product
 func AddProduct(c *fiber.Ctx) error {
 	var body CreateModel
-	err := ValidateBody(c, &body)
+	err := utils.ValidateBody(c, &body)
 	if err != nil {
 		return err
 	}
@@ -111,7 +111,7 @@ func ModifyProduct(c *fiber.Ctx) error {
 	id, _ := c.ParamsInt("id")
 
 	var body ModifyModel
-	err := ValidateBody(c, &body)
+	err := utils.ValidateBody(c, &body)
 	if err != nil {
 		return err
 	}
@@ -125,12 +125,13 @@ func ModifyProduct(c *fiber.Ctx) error {
 		return err
 	}
 
-	err = DB.Model(&product).Select("closed").Updates(&body).Error
+	bodyMap := utils.ToMap(&body)
+	err = DB.Model(&product).Updates(&bodyMap).Error
 	if err != nil {
 		return err
 	}
 
-	return c.Status(200).JSON(product)
+	return c.JSON(product)
 }
 
 // DeleteProduct

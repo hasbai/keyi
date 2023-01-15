@@ -2,6 +2,7 @@ package utils
 
 import (
 	"fmt"
+	"github.com/stretchr/testify/assert"
 	"keyi/config"
 	"testing"
 )
@@ -35,4 +36,26 @@ func TestCache(t *testing.T) {
 	if value != result {
 		t.Error("cache error", "value: ", value, "result: ", result)
 	}
+}
+
+func TestToMap(t *testing.T) {
+	type User struct {
+		ID   int    `json:"id"`
+		Name string `json:"name"`
+		Ptr  *bool  `json:"ptr"`
+		Zero int    `json:"zero"`
+	}
+	a := true
+	user := User{
+		ID:   1,
+		Name: "name",
+		Ptr:  &a,
+		Zero: 0,
+	}
+	m := ToMap(user)
+	assert.Equal(t, map[string]any{
+		"id":   1,
+		"name": "name",
+		"ptr":  true,
+	}, m)
 }
