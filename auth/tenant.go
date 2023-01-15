@@ -6,9 +6,9 @@ import (
 )
 
 type Tenant struct {
-	ID          int    `json:"id" gorm:"primarykey"`
-	Name        string `json:"name" gorm:"size:32;unique;not null"`
-	Domains     string `json:"domains" gorm:"size:256"` // separate by comma
+	ID          int         `json:"id" gorm:"primarykey"`
+	Name        string      `json:"name" gorm:"size:32;unique;not null"`
+	Domains     StringArray `json:"domains" gorm:"size:256"`
 	TenantAreas []TenantArea
 }
 

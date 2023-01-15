@@ -195,17 +195,17 @@ func Validate(c *fiber.Ctx) error {
 }
 
 func validateEmail(user User) error {
-	var domain string
-	DB.Raw("SELECT domains FROM tenant WHERE id = ?", user.TenantID).Scan(&domain)
-	if domain == "" {
-		return utils.BadRequest("tenant not supported now")
+	var tenant Tenant
+	err := DB.First(&tenant, user.TenantID).Error
+	if err != nil {
+		return err
 	}
-	domains := strings.Split(domain, ",")
+
 	userDomain := strings.Split(user.Email, "@")[1]
-	if !slices.Contains(domains, userDomain) {
+	if !slices.Contains(tenant.Domains, userDomain) {
 		return utils.BadRequest(
 			"illegal email domain, please use one of the following: " +
-				strings.Join(domains, ", "),
+				strings.Join(tenant.Domains, ", "),
 		)
 	}
 	return nil
