@@ -1,4 +1,4 @@
-package record
+package product
 
 import (
 	"github.com/gofiber/fiber/v2"
@@ -13,7 +13,7 @@ import (
 // @Produce application/json
 // @Security ApiKeyAuth
 // @Param object query Query false "query"
-// @Router /records/products [get]
+// @Router /products/records [get]
 // @Success 200 {array} Product
 func ListRecords(c *fiber.Ctx) error {
 	var query Query
@@ -38,7 +38,7 @@ func ListRecords(c *fiber.Ctx) error {
 // @Produce application/json
 // @Security ApiKeyAuth
 // @Param id path int true "product id"
-// @Router /records/products/{id} [post]
+// @Router /products/{id}/records [post]
 // @Success 201 {object} ProductRecord
 func AddRecord(c *fiber.Ctx) error {
 	id, err := c.ParamsInt("id")
@@ -65,7 +65,7 @@ func AddRecord(c *fiber.Ctx) error {
 // @Produce application/json
 // @Security ApiKeyAuth
 // @Param id path int true "product id"
-// @Router /records/products/{id} [delete]
+// @Router /products/{id}/records [delete]
 // @Success 204
 func DeleteRecord(c *fiber.Ctx) error {
 	id, err := c.ParamsInt("id")
@@ -89,7 +89,7 @@ func DeleteRecord(c *fiber.Ctx) error {
 // @Tags Record
 // @Produce application/json
 // @Security ApiKeyAuth
-// @Router /records/products [delete]
+// @Router /products/records [delete]
 // @Success 204
 func DeleteAllRecords(c *fiber.Ctx) error {
 	err := DB.

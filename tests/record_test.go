@@ -7,7 +7,7 @@ import (
 )
 
 func TestListRecords(t *testing.T) {
-	products := testAPIModel[[]Product](t, "get", "/api/records/products", 200)
+	products := testAPIModel[[]Product](t, "get", "/api/products/records", 200)
 	if len(products) != 3 {
 		t.Error("Expected 3 records, got", len(products))
 	}
@@ -19,7 +19,7 @@ func TestListRecords(t *testing.T) {
 }
 
 func TestAddRecord(t *testing.T) {
-	testAPI(t, "post", "/api/records/products/2", 201)
+	testAPI(t, "post", "/api/products/2/records", 201)
 	var record ProductRecord
 	err := DB.Where("user_id = ? AND product_id = ?", 1, 2).First(&record).Error
 	if err != nil {
@@ -34,7 +34,7 @@ func TestDeleteRecord(t *testing.T) {
 	}
 	DB.Create(&record)
 
-	testAPI(t, "delete", "/api/records/products/1", 204)
+	testAPI(t, "delete", "/api/products/1/records", 204)
 
 	var result ProductRecord
 	err := DB.Where("user_id = ? AND product_id = ?", 1, 1).First(&result).Error
@@ -45,7 +45,7 @@ func TestDeleteRecord(t *testing.T) {
 
 func TestDeleteAll(t *testing.T) {
 	setToken(2)
-	testAPI(t, "delete", "/api/records/products", 204)
+	testAPI(t, "delete", "/api/products/records", 204)
 	resetToken()
 
 	var records []ProductRecord
