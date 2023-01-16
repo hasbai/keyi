@@ -210,6 +210,19 @@ definitions:
     - ProductTypeBid
     - ProductTypeAsk
     - ProductTypeAll
+  oss.OssInformation:
+    properties:
+      base_url:
+        description: 'example: http://example.com/'
+        type: string
+      bucket:
+        type: string
+      expires:
+        description: in seconds
+        type: integer
+      token:
+        type: string
+    type: object
   product.CreateModel:
     properties:
       description:
@@ -473,6 +486,20 @@ paths:
       summary: Login
       tags:
       - Auth
+  /oss:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/oss.OssInformation'
+      security:
+      - ApiKeyAuth: []
+      summary: Get a category
+      tags:
+      - OSS
   /products/{id}:
     delete:
       parameters:

@@ -16,6 +16,7 @@ require (
 	github.com/golang-jwt/jwt/v4 v4.4.3
 	github.com/hetiansu5/urlquery v1.2.7
 	github.com/jordan-wright/email v4.0.1-0.20210109023952-943e75fe5223+incompatible
+	github.com/qiniu/go-sdk/v7 v7.14.0
 	github.com/stretchr/testify v1.8.1
 	github.com/swaggo/fiber-swagger v1.3.0
 	github.com/swaggo/swag v1.8.4
@@ -69,6 +70,7 @@ require (
 	go.uber.org/multierr v1.8.0 // indirect
 	golang.org/x/crypto v0.5.0 // indirect
 	golang.org/x/net v0.5.0 // indirect
+	golang.org/x/sync v0.0.0-20220923202941-7f9b1623fab7 // indirect
 	golang.org/x/sys v0.4.0 // indirect
 	golang.org/x/text v0.6.0 // indirect
 	golang.org/x/tools v0.2.0 // indirect

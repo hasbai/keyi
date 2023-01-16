@@ -326,6 +326,30 @@ const docTemplate = `{
                 }
             }
         },
+        "/oss": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "OSS"
+                ],
+                "summary": "Get a category",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/oss.OssInformation"
+                        }
+                    }
+                }
+            }
+        },
         "/products/favorite": {
             "get": {
                 "security": [
@@ -1628,6 +1652,25 @@ const docTemplate = `{
                 "ProductTypeAsk",
                 "ProductTypeAll"
             ]
+        },
+        "oss.OssInformation": {
+            "type": "object",
+            "properties": {
+                "base_url": {
+                    "description": "example: http://example.com/",
+                    "type": "string"
+                },
+                "bucket": {
+                    "type": "string"
+                },
+                "expires": {
+                    "description": "in seconds",
+                    "type": "integer"
+                },
+                "token": {
+                    "type": "string"
+                }
+            }
         },
         "product.CreateModel": {
             "type": "object",

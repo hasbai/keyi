@@ -23,6 +23,10 @@ type MyConfig struct {
 	SmtpUser     string `env:"SMTP_USER" envDefault:""`
 	SmtpPassword string `env:"SMTP_PASSWORD" envDefault:""`
 	FromEmail    string `env:"FROM_EMAIL" envDefault:""`
+	QiniuAccess  string `env:"QINIU_ACCESS" envDefault:""`
+	QiniuSecret  string `env:"QINIU_SECRET" envDefault:""`
+	QiniuBucket  string `env:"QINIU_BUCKET" envDefault:""`
+	QiniuBaseUrl string `env:"QINIU_BASE_URL" envDefault:""`
 }
 
 var Config MyConfig
