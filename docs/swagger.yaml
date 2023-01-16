@@ -12,6 +12,16 @@ definitions:
       message:
         type: string
     type: object
+  auth.Permission:
+    enum:
+    - 1
+    - 2
+    - 4
+    type: integer
+    x-enum-varnames:
+    - PUser
+    - PAdmin
+    - POperator
   auth.RefreshBody:
     properties:
       refresh_token:
@@ -67,6 +77,36 @@ definitions:
       access_token:
         type: string
       refresh_token:
+        type: string
+    type: object
+  auth.User:
+    properties:
+      avatar:
+        type: string
+      created_at:
+        type: string
+      description:
+        type: string
+      follow:
+        items:
+          $ref: '#/definitions/auth.User'
+        type: array
+      id:
+        type: integer
+      permission:
+        $ref: '#/definitions/auth.Permission'
+      tenant:
+        $ref: '#/definitions/auth.Tenant'
+      tenant_area:
+        $ref: '#/definitions/auth.TenantArea'
+      tenant_area_id:
+        description: 0 is default area
+        type: integer
+      tenant_id:
+        type: integer
+      updated_at:
+        type: string
+      username:
         type: string
     type: object
   category.CreateModel:
@@ -292,10 +332,10 @@ paths:
         in: query
         name: orderBy
         type: string
-      - default: 10
+      - default: 30
         description: length of object array
         in: query
-        maximum: 30
+        maximum: 100
         minimum: 0
         name: size
         type: integer
@@ -592,10 +632,10 @@ paths:
         in: query
         name: orderBy
         type: string
-      - default: 10
+      - default: 30
         description: length of object array
         in: query
-        maximum: 30
+        maximum: 100
         minimum: 0
         name: size
         type: integer
@@ -646,10 +686,10 @@ paths:
         in: query
         name: orderBy
         type: string
-      - default: 10
+      - default: 30
         description: length of object array
         in: query
-        maximum: 30
+        maximum: 100
         minimum: 0
         name: size
         type: integer
@@ -730,6 +770,69 @@ paths:
       summary: List Tenants
       tags:
       - Tenant
+  /users:
+    get:
+      parameters:
+      - default: 0
+        description: offset of object array
+        in: query
+        minimum: 0
+        name: offset
+        type: integer
+      - default: id
+        description: SQL ORDER BY field
+        in: query
+        name: orderBy
+        type: string
+      - default: 30
+        description: length of object array
+        in: query
+        maximum: 100
+        minimum: 0
+        name: size
+        type: integer
+      - default: desc
+        description: Sort order
+        enum:
+        - asc
+        - desc
+        in: query
+        name: sort
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/auth.User'
+            type: array
+      security:
+      - ApiKeyAuth: []
+      summary: List users
+      tags:
+      - User
+  /users/{id}:
+    get:
+      parameters:
+      - description: user id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/auth.User'
+      security:
+      - ApiKeyAuth: []
+      summary: Get a user
+      tags:
+      - User
   /users/{id}/activate:
     get:
       description: clicks the link in the email to activate the user
@@ -753,6 +856,147 @@ paths:
       summary: Activate
       tags:
       - Auth
+  /users/{id}/follow:
+    get:
+      parameters:
+      - default: 0
+        description: offset of object array
+        in: query
+        minimum: 0
+        name: offset
+        type: integer
+      - default: id
+        description: SQL ORDER BY field
+        in: query
+        name: orderBy
+        type: string
+      - default: 30
+        description: length of object array
+        in: query
+        maximum: 100
+        minimum: 0
+        name: size
+        type: integer
+      - default: desc
+        description: Sort order
+        enum:
+        - asc
+        - desc
+        in: query
+        name: sort
+        type: string
+      - description: user id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/auth.User'
+            type: array
+      security:
+      - ApiKeyAuth: []
+      summary: List a user's follow users
+      tags:
+      - Follow
+  /users/{id}/follow/{f_id}:
+    delete:
+      parameters:
+      - description: user id
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: follow user id
+        in: path
+        name: f_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+      security:
+      - ApiKeyAuth: []
+      summary: Delete a follow user
+      tags:
+      - Follow
+    post:
+      parameters:
+      - description: user id
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: follow user id
+        in: path
+        name: f_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+      security:
+      - ApiKeyAuth: []
+      summary: Add a follow user
+      tags:
+      - Follow
+  /users/{id}/followed-by:
+    get:
+      parameters:
+      - default: 0
+        description: offset of object array
+        in: query
+        minimum: 0
+        name: offset
+        type: integer
+      - default: id
+        description: SQL ORDER BY field
+        in: query
+        name: orderBy
+        type: string
+      - default: 30
+        description: length of object array
+        in: query
+        maximum: 100
+        minimum: 0
+        name: size
+        type: integer
+      - default: desc
+        description: Sort order
+        enum:
+        - asc
+        - desc
+        in: query
+        name: sort
+        type: string
+      - description: user id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/auth.User'
+            type: array
+      security:
+      - ApiKeyAuth: []
+      summary: List users follow a user
+      tags:
+      - Follow
   /users/{id}/products:
     get:
       parameters:
@@ -767,10 +1011,10 @@ paths:
         in: query
         name: orderBy
         type: string
-      - default: 10
+      - default: 30
         description: length of object array
         in: query
-        maximum: 30
+        maximum: 100
         minimum: 0
         name: size
         type: integer
@@ -815,10 +1059,10 @@ paths:
         in: query
         name: orderBy
         type: string
-      - default: 10
+      - default: 30
         description: length of object array
         in: query
-        maximum: 30
+        maximum: 100
         minimum: 0
         name: size
         type: integer

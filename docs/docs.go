@@ -120,10 +120,10 @@ const docTemplate = `{
                         "in": "query"
                     },
                     {
-                        "maximum": 30,
+                        "maximum": 100,
                         "minimum": 0,
                         "type": "integer",
-                        "default": 10,
+                        "default": 30,
                         "description": "length of object array",
                         "name": "size",
                         "in": "query"
@@ -357,10 +357,10 @@ const docTemplate = `{
                         "in": "query"
                     },
                     {
-                        "maximum": 30,
+                        "maximum": 100,
                         "minimum": 0,
                         "type": "integer",
-                        "default": 10,
+                        "default": 30,
                         "description": "length of object array",
                         "name": "size",
                         "in": "query"
@@ -440,10 +440,10 @@ const docTemplate = `{
                         "in": "query"
                     },
                     {
-                        "maximum": 30,
+                        "maximum": 100,
                         "minimum": 0,
                         "type": "integer",
-                        "default": 10,
+                        "default": 30,
                         "description": "length of object array",
                         "name": "size",
                         "in": "query"
@@ -793,6 +793,103 @@ const docTemplate = `{
                 }
             }
         },
+        "/users": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "User"
+                ],
+                "summary": "List users",
+                "parameters": [
+                    {
+                        "minimum": 0,
+                        "type": "integer",
+                        "default": 0,
+                        "description": "offset of object array",
+                        "name": "offset",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "default": "id",
+                        "description": "SQL ORDER BY field",
+                        "name": "orderBy",
+                        "in": "query"
+                    },
+                    {
+                        "maximum": 100,
+                        "minimum": 0,
+                        "type": "integer",
+                        "default": 30,
+                        "description": "length of object array",
+                        "name": "size",
+                        "in": "query"
+                    },
+                    {
+                        "enum": [
+                            "asc",
+                            "desc"
+                        ],
+                        "type": "string",
+                        "default": "desc",
+                        "description": "Sort order",
+                        "name": "sort",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/auth.User"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/users/{id}": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "User"
+                ],
+                "summary": "Get a user",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "user id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/auth.User"
+                        }
+                    }
+                }
+            }
+        },
         "/users/{id}/activate": {
             "get": {
                 "description": "clicks the link in the email to activate the user",
@@ -823,6 +920,220 @@ const docTemplate = `{
                         "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/auth.TokenResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/users/{id}/follow": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Follow"
+                ],
+                "summary": "List a user's follow users",
+                "parameters": [
+                    {
+                        "minimum": 0,
+                        "type": "integer",
+                        "default": 0,
+                        "description": "offset of object array",
+                        "name": "offset",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "default": "id",
+                        "description": "SQL ORDER BY field",
+                        "name": "orderBy",
+                        "in": "query"
+                    },
+                    {
+                        "maximum": 100,
+                        "minimum": 0,
+                        "type": "integer",
+                        "default": 30,
+                        "description": "length of object array",
+                        "name": "size",
+                        "in": "query"
+                    },
+                    {
+                        "enum": [
+                            "asc",
+                            "desc"
+                        ],
+                        "type": "string",
+                        "default": "desc",
+                        "description": "Sort order",
+                        "name": "sort",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "user id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/auth.User"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/users/{id}/follow/{f_id}": {
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Follow"
+                ],
+                "summary": "Add a follow user",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "user id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "follow user id",
+                        "name": "f_id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created"
+                    }
+                }
+            },
+            "delete": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Follow"
+                ],
+                "summary": "Delete a follow user",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "user id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "follow user id",
+                        "name": "f_id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No Content"
+                    }
+                }
+            }
+        },
+        "/users/{id}/followed-by": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Follow"
+                ],
+                "summary": "List users follow a user",
+                "parameters": [
+                    {
+                        "minimum": 0,
+                        "type": "integer",
+                        "default": 0,
+                        "description": "offset of object array",
+                        "name": "offset",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "default": "id",
+                        "description": "SQL ORDER BY field",
+                        "name": "orderBy",
+                        "in": "query"
+                    },
+                    {
+                        "maximum": 100,
+                        "minimum": 0,
+                        "type": "integer",
+                        "default": 30,
+                        "description": "length of object array",
+                        "name": "size",
+                        "in": "query"
+                    },
+                    {
+                        "enum": [
+                            "asc",
+                            "desc"
+                        ],
+                        "type": "string",
+                        "default": "desc",
+                        "description": "Sort order",
+                        "name": "sort",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "user id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/auth.User"
+                            }
                         }
                     }
                 }
@@ -859,10 +1170,10 @@ const docTemplate = `{
                         "in": "query"
                     },
                     {
-                        "maximum": 30,
+                        "maximum": 100,
                         "minimum": 0,
                         "type": "integer",
-                        "default": 10,
+                        "default": 30,
                         "description": "length of object array",
                         "name": "size",
                         "in": "query"
@@ -930,10 +1241,10 @@ const docTemplate = `{
                         "in": "query"
                     },
                     {
-                        "maximum": 30,
+                        "maximum": 100,
                         "minimum": 0,
                         "type": "integer",
-                        "default": 10,
+                        "default": 30,
                         "description": "length of object array",
                         "name": "size",
                         "in": "query"
@@ -1025,6 +1336,19 @@ const docTemplate = `{
                 }
             }
         },
+        "auth.Permission": {
+            "type": "integer",
+            "enum": [
+                1,
+                2,
+                4
+            ],
+            "x-enum-varnames": [
+                "PUser",
+                "PAdmin",
+                "POperator"
+            ]
+        },
         "auth.RefreshBody": {
             "type": "object",
             "required": [
@@ -1107,6 +1431,51 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "refresh_token": {
+                    "type": "string"
+                }
+            }
+        },
+        "auth.User": {
+            "type": "object",
+            "properties": {
+                "avatar": {
+                    "type": "string"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "follow": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/auth.User"
+                    }
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "permission": {
+                    "$ref": "#/definitions/auth.Permission"
+                },
+                "tenant": {
+                    "$ref": "#/definitions/auth.Tenant"
+                },
+                "tenant_area": {
+                    "$ref": "#/definitions/auth.TenantArea"
+                },
+                "tenant_area_id": {
+                    "description": "0 is default area",
+                    "type": "integer"
+                },
+                "tenant_id": {
+                    "type": "integer"
+                },
+                "updated_at": {
+                    "type": "string"
+                },
+                "username": {
                     "type": "string"
                 }
             }

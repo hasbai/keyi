@@ -7,16 +7,17 @@ import (
 
 type User struct {
 	models.BaseModel
-	Username     string     `json:"username" gorm:"size:32;not null"`
-	Description  string     `json:"description" gorm:"size:256;not null"`
-	Email        string     `json:"email" gorm:"size:64;unique;not null"`
-	OpenID       string     `json:"openid" gorm:"size:64;unique;not null"`
-	Permission   Permission `json:"permission" gorm:"not null"`
-	Avatar       string     `json:"avatar" gorm:"size:256;not null"`
-	TenantID     int        `json:"tenant_id" gorm:"not null"`
-	Tenant       Tenant     `json:"tenant"`
-	TenantAreaID int        `json:"tenant_area_id" gorm:"not null"` // 0 is default area
-	TenantArea   TenantArea `json:"tenant_area"`
+	Username     string      `json:"username" gorm:"size:32;not null"`
+	Description  string      `json:"description" gorm:"size:256;not null"`
+	Email        string      `json:"-" gorm:"size:64;unique;not null"`
+	OpenID       string      `json:"-" gorm:"size:64;unique;not null"`
+	Permission   Permission  `json:"permission" gorm:"not null"`
+	Avatar       string      `json:"avatar" gorm:"size:256;not null"`
+	TenantID     int         `json:"tenant_id" gorm:"not null"`
+	Tenant       *Tenant     `json:"tenant,omitempty"`
+	TenantAreaID int         `json:"tenant_area_id" gorm:"not null"` // 0 is default area
+	TenantArea   *TenantArea `json:"tenant_area,omitempty"`
+	Follow       []User      `json:"follow,omitempty" gorm:"many2many:user_follow"`
 }
 
 func (u *User) GetTokenInfo() *TokenInfo {
