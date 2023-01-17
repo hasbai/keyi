@@ -13,6 +13,7 @@ func RegisterRoutes(app fiber.Router) {
 
 	app.Get("/users", ListUsers)
 	app.Get("/users/:id", GetUser)
+	app.Put("/users/:id", ModifyUser)
 
 	app.Get("/users/:id/follow", ListFollow)
 	app.Get("/users/:id/followed-by", ListFollowedBy)

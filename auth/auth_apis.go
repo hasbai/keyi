@@ -150,6 +150,9 @@ func Register(c *fiber.Ctx) error {
 	user.Username = body.Username
 	user.TenantID = body.TenantID
 	user.TenantAreaID = body.TenantAreaID
+	user.Description = body.Description
+	user.Avatar = body.Avatar
+	user.Contacts = body.Contacts
 
 	err = validateEmail(user)
 	if err != nil {
@@ -289,9 +292,11 @@ func Activate(c *fiber.Ctx) error {
 type RegisterBody struct {
 	Username     string `json:"username" validate:"max=32"`
 	Email        string `json:"email" validate:"required,email"`
-	Password     string `json:"password" validate:"required,min=8"`
 	TenantID     int    `json:"tenant_id" validate:"required"`
 	TenantAreaID int    `json:"tenant_area_id"`
+	Description  string `json:"description"`
+	Avatar       string `json:"avatar"`
+	Contacts     string `json:"contacts"`
 }
 
 type LoginBody struct {

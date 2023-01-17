@@ -13,6 +13,7 @@ type User struct {
 	OpenID       string      `json:"-" gorm:"size:64;unique;not null"`
 	Permission   Permission  `json:"permission" gorm:"not null"`
 	Avatar       string      `json:"avatar" gorm:"size:256;not null"`
+	Contacts     string      `json:"contacts" gorm:"size:32;not null"`
 	TenantID     int         `json:"tenant_id" gorm:"not null"`
 	Tenant       *Tenant     `json:"tenant,omitempty"`
 	TenantAreaID int         `json:"tenant_area_id" gorm:"not null"` // 0 is default area

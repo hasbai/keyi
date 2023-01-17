@@ -63,6 +63,47 @@ func ListUsers(c *fiber.Ctx) error {
 	return c.JSON(users)
 }
 
+// ModifyUser
+// @Summary Modify a user
+// @Tags User
+// @Produce application/json
+// @Security ApiKeyAuth
+// @Param json body ModifyUserModel true "json"
+// @Param id path int true "user id"
+// @Router /users/{id} [put]
+// @Success 201 {object} User
+func ModifyUser(c *fiber.Ctx) error {
+	id, err := c.ParamsInt("id")
+	if err != nil {
+		return err
+	}
+
+	err = OwnerOrPerm(c, PAdmin, id)
+	if err != nil {
+		return err
+	}
+
+	var body ModifyUserModel
+	err = utils.ValidateBody(c, &body)
+	if err != nil {
+		return err
+	}
+	// TODO: username modify limit
+
+	var user User
+	err = DB.First(&user, id).Error
+	if err != nil {
+		return err
+	}
+
+	err = DB.Model(&user).Updates(&body).Error
+	if err != nil {
+		return err
+	}
+
+	return c.JSON(&user)
+}
+
 // ListFollow
 // @Summary List a user's follow users
 // @Tags Follow
@@ -209,4 +250,13 @@ func DeleteFollow(c *fiber.Ctx) error {
 	}
 
 	return c.Status(204).JSON(nil)
+}
+
+type ModifyUserModel struct {
+	Username     string `json:"username" validate:"max=32"`
+	TenantID     int    `json:"tenant_id"`
+	TenantAreaID int    `json:"tenant_area_id"`
+	Description  string `json:"description"`
+	Avatar       string `json:"avatar"`
+	Contacts     string `json:"contacts"`
 }
