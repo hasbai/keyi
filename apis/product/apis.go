@@ -157,17 +157,22 @@ func ListUserProductsType(c *fiber.Ctx) error {
 // @Produce application/json
 // @Security ApiKeyAuth
 // @Param json body CreateModel true "json"
-// @Param category_id path int true "category_id"
-// @Router /categories/{category_id}/products [post]
+// @Param id path int true "category id"
+// @Router /categories/{id}/products [post]
 // @Success 201 {object} Product
 func AddProduct(c *fiber.Ctx) error {
-	var body CreateModel
-	err := utils.ValidateBody(c, &body)
+	err := auth.PermOnly(c, auth.PUser)
 	if err != nil {
 		return err
 	}
 
 	categoryID, err := c.ParamsInt("id")
+	if err != nil {
+		return err
+	}
+
+	var body CreateModel
+	err = utils.ValidateBody(c, &body)
 	if err != nil {
 		return err
 	}
@@ -178,8 +183,14 @@ func AddProduct(c *fiber.Ctx) error {
 		Images:      body.Images,
 		Price:       body.Price,
 		Type:        body.Type,
+		Contacts:    body.Contacts,
 		CategoryID:  categoryID,
 		UserID:      auth.GetClaims(c).UID,
+	}
+	if product.Contacts == "" {
+		var user auth.User
+		DB.Select("contacts").First(&user, product.UserID)
+		product.Contacts = user.Contacts
 	}
 
 	err = DB.Create(&product).Error

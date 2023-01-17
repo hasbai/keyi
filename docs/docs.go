@@ -158,46 +158,6 @@ const docTemplate = `{
                         }
                     }
                 }
-            },
-            "post": {
-                "security": [
-                    {
-                        "ApiKeyAuth": []
-                    }
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Product"
-                ],
-                "summary": "Add a product",
-                "parameters": [
-                    {
-                        "description": "json",
-                        "name": "json",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/product.CreateModel"
-                        }
-                    },
-                    {
-                        "type": "integer",
-                        "description": "category_id",
-                        "name": "category_id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "201": {
-                        "description": "Created",
-                        "schema": {
-                            "$ref": "#/definitions/models.Product"
-                        }
-                    }
-                }
             }
         },
         "/categories/{id}": {
@@ -291,6 +251,48 @@ const docTemplate = `{
                 "responses": {
                     "204": {
                         "description": "No Content"
+                    }
+                }
+            }
+        },
+        "/categories/{id}/products": {
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Product"
+                ],
+                "summary": "Add a product",
+                "parameters": [
+                    {
+                        "description": "json",
+                        "name": "json",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/product.CreateModel"
+                        }
+                    },
+                    {
+                        "type": "integer",
+                        "description": "category id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/models.Product"
+                        }
                     }
                 }
             }
@@ -912,6 +914,46 @@ const docTemplate = `{
                         }
                     }
                 }
+            },
+            "put": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "User"
+                ],
+                "summary": "Modify a user",
+                "parameters": [
+                    {
+                        "description": "json",
+                        "name": "json",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/auth.ModifyUserModel"
+                        }
+                    },
+                    {
+                        "type": "integer",
+                        "description": "user id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/auth.User"
+                        }
+                    }
+                }
             }
         },
         "/users/{id}/activate": {
@@ -1360,6 +1402,30 @@ const docTemplate = `{
                 }
             }
         },
+        "auth.ModifyUserModel": {
+            "type": "object",
+            "properties": {
+                "avatar": {
+                    "type": "string"
+                },
+                "contacts": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "tenant_area_id": {
+                    "type": "integer"
+                },
+                "tenant_id": {
+                    "type": "integer"
+                },
+                "username": {
+                    "type": "string",
+                    "maxLength": 32
+                }
+            }
+        },
         "auth.Permission": {
             "type": "integer",
             "enum": [
@@ -1388,16 +1454,20 @@ const docTemplate = `{
             "type": "object",
             "required": [
                 "email",
-                "password",
                 "tenant_id"
             ],
             "properties": {
-                "email": {
+                "avatar": {
                     "type": "string"
                 },
-                "password": {
-                    "type": "string",
-                    "minLength": 8
+                "contacts": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "email": {
+                    "type": "string"
                 },
                 "tenant_area_id": {
                     "type": "integer"
@@ -1463,6 +1533,9 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "avatar": {
+                    "type": "string"
+                },
+                "contacts": {
                     "type": "string"
                 },
                 "created_at": {
@@ -1575,6 +1648,9 @@ const docTemplate = `{
                 "closed": {
                     "type": "boolean"
                 },
+                "contacts": {
+                    "type": "string"
+                },
                 "created_at": {
                     "type": "string"
                 },
@@ -1681,6 +1757,10 @@ const docTemplate = `{
                 "type"
             ],
             "properties": {
+                "contacts": {
+                    "type": "string",
+                    "maxLength": 32
+                },
                 "description": {
                     "type": "string",
                     "maxLength": 256
@@ -1724,6 +1804,10 @@ const docTemplate = `{
                 },
                 "closed": {
                     "type": "boolean"
+                },
+                "contacts": {
+                    "type": "string",
+                    "maxLength": 32
                 },
                 "description": {
                     "type": "string",

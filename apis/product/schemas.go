@@ -7,6 +7,7 @@ import (
 type CreateModel struct {
 	Name        string      `json:"name" validate:"required,max=32"`
 	Description string      `json:"description" validate:"max=256"`
+	Contacts    string      `json:"contacts" validate:"max=32"`
 	Images      StringArray `json:"images"`
 	// Price in cent, $2.70 = 270
 	Price    int         `json:"price" validate:"required,min=0"`
@@ -17,6 +18,7 @@ type CreateModel struct {
 type ModifyModel struct {
 	Name        string      `json:"name" validate:"max=32"`
 	Description string      `json:"description" validate:"max=256"`
+	Contacts    string      `json:"contacts" validate:"max=32"`
 	Images      StringArray `json:"images"`
 	Price       int         `json:"price" validate:"min=0"`
 	Type        ProductType `json:"type"`

@@ -12,6 +12,22 @@ definitions:
       message:
         type: string
     type: object
+  auth.ModifyUserModel:
+    properties:
+      avatar:
+        type: string
+      contacts:
+        type: string
+      description:
+        type: string
+      tenant_area_id:
+        type: integer
+      tenant_id:
+        type: integer
+      username:
+        maxLength: 32
+        type: string
+    type: object
   auth.Permission:
     enum:
     - 1
@@ -31,10 +47,13 @@ definitions:
     type: object
   auth.RegisterBody:
     properties:
-      email:
+      avatar:
         type: string
-      password:
-        minLength: 8
+      contacts:
+        type: string
+      description:
+        type: string
+      email:
         type: string
       tenant_area_id:
         type: integer
@@ -45,7 +64,6 @@ definitions:
         type: string
     required:
     - email
-    - password
     - tenant_id
     type: object
   auth.Tenant:
@@ -82,6 +100,8 @@ definitions:
   auth.User:
     properties:
       avatar:
+        type: string
+      contacts:
         type: string
       created_at:
         type: string
@@ -156,6 +176,8 @@ definitions:
         type: integer
       closed:
         type: boolean
+      contacts:
+        type: string
       created_at:
         type: string
       description:
@@ -225,6 +247,9 @@ definitions:
     type: object
   product.CreateModel:
     properties:
+      contacts:
+        maxLength: 32
+        type: string
       description:
         maxLength: 256
         type: string
@@ -259,6 +284,9 @@ definitions:
         type: integer
       closed:
         type: boolean
+      contacts:
+        maxLength: 32
+        type: string
       description:
         maxLength: 256
         type: string
@@ -379,31 +407,6 @@ paths:
       summary: List Products
       tags:
       - Product
-    post:
-      parameters:
-      - description: json
-        in: body
-        name: json
-        required: true
-        schema:
-          $ref: '#/definitions/product.CreateModel'
-      - description: category_id
-        in: path
-        name: category_id
-        required: true
-        type: integer
-      produces:
-      - application/json
-      responses:
-        "201":
-          description: Created
-          schema:
-            $ref: '#/definitions/models.Product'
-      security:
-      - ApiKeyAuth: []
-      summary: Add a product
-      tags:
-      - Product
   /categories/{id}:
     delete:
       parameters:
@@ -466,6 +469,32 @@ paths:
       summary: Modify A Category
       tags:
       - Category
+  /categories/{id}/products:
+    post:
+      parameters:
+      - description: json
+        in: body
+        name: json
+        required: true
+        schema:
+          $ref: '#/definitions/product.CreateModel'
+      - description: category id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/models.Product'
+      security:
+      - ApiKeyAuth: []
+      summary: Add a product
+      tags:
+      - Product
   /login:
     post:
       description: use wx code to get access token
@@ -858,6 +887,31 @@ paths:
       security:
       - ApiKeyAuth: []
       summary: Get a user
+      tags:
+      - User
+    put:
+      parameters:
+      - description: json
+        in: body
+        name: json
+        required: true
+        schema:
+          $ref: '#/definitions/auth.ModifyUserModel'
+      - description: user id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/auth.User'
+      security:
+      - ApiKeyAuth: []
+      summary: Modify a user
       tags:
       - User
   /users/{id}/activate:
