@@ -1,16 +1,13 @@
 package auth
 
 import (
-	"errors"
 	"fmt"
-	"github.com/goccy/go-json"
 	"github.com/gofiber/fiber/v2"
+	"github.com/medivhzhan/weapp/v3/auth"
 	"golang.org/x/exp/slices"
-	"io"
 	"keyi/config"
 	. "keyi/models"
 	"keyi/utils"
-	"net/http"
 	"strings"
 )
 
@@ -35,8 +32,8 @@ func Login(c *fiber.Ctx) error {
 	}
 
 	var user User
-	user.OpenID = wxResponse.OpenID
-	DB.FirstOrCreate(&user, "open_id = ?", wxResponse.OpenID)
+	user.OpenID = wxResponse.Openid
+	DB.FirstOrCreate(&user, "open_id = ?", wxResponse.Openid)
 
 	access, refresh, err := GenerateTokens(&user)
 	if err != nil {
@@ -49,37 +46,19 @@ func Login(c *fiber.Ctx) error {
 	})
 }
 
-func login(code string) (WxResponse, error) {
-	var wxResponse WxResponse
-
+func login(code string) (*auth.Code2SessionResponse, error) {
 	if config.Config.Debug {
-		wxResponse.OpenID = "test-openid"
-		return wxResponse, nil
+		return &auth.Code2SessionResponse{
+			Openid: "test-openid",
+		}, nil
 	}
 
-	response, err := http.Get(fmt.Sprintf(
-		"https://api.weixin.qq.com/sns/jscode2session?appid=%s&secret=%s&js_code=%s&grant_type=authorization_code",
-		config.Config.AppID, config.Config.AppSecret, code,
-	))
-	if err != nil {
-		return wxResponse, errors.New("wx login failed, http request failed")
-	}
-	defer response.Body.Close()
-
-	bodyBytes, err := io.ReadAll(response.Body)
-	if err != nil {
-		return wxResponse, errors.New("wx login failed, read response body failed")
-	}
-
-	err = json.Unmarshal(bodyBytes, &wxResponse)
-	if err != nil {
-		return wxResponse, errors.New("wx login failed, unmarshal response body failed")
-	}
-	if wxResponse.ErrorCode != 0 {
-		return wxResponse, errors.New("wx login failed, " + wxResponse.ErrorMsg)
-	}
-
-	return wxResponse, nil
+	return WeSDK.Code2Session(&auth.Code2SessionRequest{
+		Appid:     config.Config.AppID,
+		Secret:    config.Config.AppSecret,
+		JsCode:    code,
+		GrantType: "authorization_code",
+	})
 }
 
 // Refresh
