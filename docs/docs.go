@@ -203,7 +203,8 @@ const docTemplate = `{
                         "maximum": 1,
                         "minimum": -1,
                         "type": "integer",
-                        "description": "0: false, 1: true, -1: all, default is 0",
+                        "default": 0,
+                        "description": "0: false, 1: true, -1: all",
                         "name": "closed",
                         "in": "query"
                     },
@@ -251,7 +252,8 @@ const docTemplate = `{
                         "maximum": 1,
                         "minimum": -1,
                         "type": "integer",
-                        "description": "0: all, 1: sell, -1: buy, default is 0",
+                        "default": 0,
+                        "description": "0: all, 1: sell, -1: buy",
                         "name": "type",
                         "in": "query"
                     },
@@ -1243,7 +1245,8 @@ const docTemplate = `{
                         "maximum": 1,
                         "minimum": -1,
                         "type": "integer",
-                        "description": "0: false, 1: true, -1: all, default is 0",
+                        "default": 0,
+                        "description": "0: false, 1: true, -1: all",
                         "name": "closed",
                         "in": "query"
                     },
@@ -1291,7 +1294,8 @@ const docTemplate = `{
                         "maximum": 1,
                         "minimum": -1,
                         "type": "integer",
-                        "description": "0: all, 1: sell, -1: buy, default is 0",
+                        "default": 0,
+                        "description": "0: all, 1: sell, -1: buy",
                         "name": "type",
                         "in": "query"
                     },

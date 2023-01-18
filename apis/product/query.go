@@ -11,11 +11,11 @@ import (
 
 type ListProductsQuery struct {
 	Query
-	Search string `query:"search"`
-	// 0: false, 1: true, -1: all, default is 0
-	Closed int8 `query:"closed" validate:"min=-1,max=1"`
-	// 0: all, 1: sell, -1: buy, default is 0
-	Type int8 `query:"type" validate:"min=-1,max=1"`
+	Search string `query:"search" default:""`
+	// 0: false, 1: true, -1: all
+	Closed int8 `query:"closed" default:"0" validate:"min=-1,max=1"`
+	// 0: all, 1: sell, -1: buy
+	Type int8 `query:"type" default:"0" validate:"min=-1,max=1"`
 }
 
 func (q *ListProductsQuery) BaseQuery() *gorm.DB {
