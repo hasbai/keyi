@@ -34,12 +34,12 @@ func GetProduct(c *fiber.Ctx) error {
 // @Tags Product
 // @Produce application/json
 // @Security ApiKeyAuth
-// @Param object query Query false "query"
-// @Param category_id path int true "category_id"
-// @Router /categories/{category_id}/products [get]
+// @Param object query ListProductsQuery false "query"
+// @Param id path int true "category id"
+// @Router /categories/{id}/products [get]
 // @Success 200 {array} Product
 func ListProducts(c *fiber.Ctx) error {
-	var query Query
+	var query ListProductsQuery
 	err := utils.ValidateQuery(c, &query)
 	if err != nil {
 		return err
@@ -50,12 +50,16 @@ func ListProducts(c *fiber.Ctx) error {
 		return err
 	}
 
+	q := query.BaseQuery().Where("category_id = ?", categoryID)
+	tenantID := auth.GetClaims(c).TenantID
+	if tenantID != 0 {
+		q = q.Where("tenant_id = ?", tenantID)
+	}
 	var products []Product
-	query.BaseQuery().
-		Where("tenant_id = ?", auth.GetClaims(c).TenantID).
-		Where("category_id = ?", categoryID).
-		Where("closed = ?", false).
-		Find(&products)
+	err = q.Find(&products).Error
+	if err != nil {
+		return err
+	}
 
 	return c.JSON(products)
 }
@@ -65,12 +69,12 @@ func ListProducts(c *fiber.Ctx) error {
 // @Tags Product
 // @Produce application/json
 // @Security ApiKeyAuth
-// @Param object query Query false "query"
+// @Param object query ListProductsQuery false "query"
 // @Param id path int true "user id"
 // @Router /users/{id}/products [get]
 // @Success 200 {array} Product
 func ListUserProducts(c *fiber.Ctx) error {
-	var query ListUserProductsQuery
+	var query ListProductsQuery
 	err := utils.ValidateQuery(c, &query)
 	if err != nil {
 		return err
@@ -87,18 +91,12 @@ func ListUserProducts(c *fiber.Ctx) error {
 	}
 
 	var products []Product
-	clause := query.BaseQuery().Where("user_id = ?", userID)
-	switch query.Closed {
-	case 1:
-		clause = clause.Where("closed = ?", false)
-	case -1:
-		clause = clause.Where("closed = ?", true)
+	err = query.BaseQuery().
+		Where("user_id = ?", userID).
+		Find(&products).Error
+	if err != nil {
+		return err
 	}
-	if query.Type != ProductTypeAll {
-		clause = clause.Where("type = ?", query.Type)
-	}
-
-	clause.Find(&products)
 
 	return c.JSON(products)
 }
@@ -264,4 +262,27 @@ func DeleteProduct(c *fiber.Ctx) error {
 	}
 
 	return c.Status(204).JSON(nil)
+}
+
+type CreateModel struct {
+	Name        string      `json:"name" validate:"required,max=32"`
+	Description string      `json:"description" validate:"max=256"`
+	Contacts    string      `json:"contacts" validate:"max=32"`
+	Images      StringArray `json:"images"`
+	// Price in cent, $2.70 = 270
+	Price    int         `json:"price" validate:"required,min=0"`
+	Type     ProductType `json:"type" validate:"required,oneof=-1 1"`
+	TenantID int         `json:"tenant_id" validate:"required"`
+}
+
+type ModifyModel struct {
+	Name        string      `json:"name" validate:"max=32"`
+	Description string      `json:"description" validate:"max=256"`
+	Contacts    string      `json:"contacts" validate:"max=32"`
+	Images      StringArray `json:"images"`
+	Price       int         `json:"price" validate:"min=0"`
+	Type        ProductType `json:"type"`
+	TenantID    int         `json:"tenant_id"`
+	CategoryID  int         `json:"category_id"`
+	Closed      *bool       `json:"closed"`
 }

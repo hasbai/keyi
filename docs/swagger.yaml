@@ -357,56 +357,6 @@ paths:
       summary: Add A Category
       tags:
       - Category
-  /categories/{category_id}/products:
-    get:
-      description: Return products that have the same talent_id as the user in a certain
-        category
-      parameters:
-      - default: 0
-        description: offset of object array
-        in: query
-        minimum: 0
-        name: offset
-        type: integer
-      - default: id
-        description: SQL ORDER BY field
-        in: query
-        name: orderBy
-        type: string
-      - default: 30
-        description: length of object array
-        in: query
-        maximum: 100
-        minimum: 0
-        name: size
-        type: integer
-      - default: desc
-        description: Sort order
-        enum:
-        - asc
-        - desc
-        in: query
-        name: sort
-        type: string
-      - description: category_id
-        in: path
-        name: category_id
-        required: true
-        type: integer
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            items:
-              $ref: '#/definitions/models.Product'
-            type: array
-      security:
-      - ApiKeyAuth: []
-      summary: List Products
-      tags:
-      - Product
   /categories/{id}:
     delete:
       parameters:
@@ -470,6 +420,70 @@ paths:
       tags:
       - Category
   /categories/{id}/products:
+    get:
+      description: Return products that have the same talent_id as the user in a certain
+        category
+      parameters:
+      - description: '0: false, 1: true, -1: all, default is 0'
+        in: query
+        maximum: 1
+        minimum: -1
+        name: closed
+        type: integer
+      - default: 0
+        description: offset of object array
+        in: query
+        minimum: 0
+        name: offset
+        type: integer
+      - default: id
+        description: SQL ORDER BY field
+        in: query
+        name: orderBy
+        type: string
+      - in: query
+        name: search
+        type: string
+      - default: 30
+        description: length of object array
+        in: query
+        maximum: 100
+        minimum: 0
+        name: size
+        type: integer
+      - default: desc
+        description: Sort order
+        enum:
+        - asc
+        - desc
+        in: query
+        name: sort
+        type: string
+      - description: '0: all, 1: sell, -1: buy, default is 0'
+        in: query
+        maximum: 1
+        minimum: -1
+        name: type
+        type: integer
+      - description: category id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.Product'
+            type: array
+      security:
+      - ApiKeyAuth: []
+      summary: List Products
+      tags:
+      - Product
     post:
       parameters:
       - description: json
@@ -1081,6 +1095,12 @@ paths:
   /users/{id}/products:
     get:
       parameters:
+      - description: '0: false, 1: true, -1: all, default is 0'
+        in: query
+        maximum: 1
+        minimum: -1
+        name: closed
+        type: integer
       - default: 0
         description: offset of object array
         in: query
@@ -1091,6 +1111,9 @@ paths:
         description: SQL ORDER BY field
         in: query
         name: orderBy
+        type: string
+      - in: query
+        name: search
         type: string
       - default: 30
         description: length of object array
@@ -1107,6 +1130,12 @@ paths:
         in: query
         name: sort
         type: string
+      - description: '0: all, 1: sell, -1: buy, default is 0'
+        in: query
+        maximum: 1
+        minimum: -1
+        name: type
+        type: integer
       - description: user id
         in: path
         name: id

@@ -88,78 +88,6 @@ const docTemplate = `{
                 }
             }
         },
-        "/categories/{category_id}/products": {
-            "get": {
-                "security": [
-                    {
-                        "ApiKeyAuth": []
-                    }
-                ],
-                "description": "Return products that have the same talent_id as the user in a certain category",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Product"
-                ],
-                "summary": "List Products",
-                "parameters": [
-                    {
-                        "minimum": 0,
-                        "type": "integer",
-                        "default": 0,
-                        "description": "offset of object array",
-                        "name": "offset",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "default": "id",
-                        "description": "SQL ORDER BY field",
-                        "name": "orderBy",
-                        "in": "query"
-                    },
-                    {
-                        "maximum": 100,
-                        "minimum": 0,
-                        "type": "integer",
-                        "default": 30,
-                        "description": "length of object array",
-                        "name": "size",
-                        "in": "query"
-                    },
-                    {
-                        "enum": [
-                            "asc",
-                            "desc"
-                        ],
-                        "type": "string",
-                        "default": "desc",
-                        "description": "Sort order",
-                        "name": "sort",
-                        "in": "query"
-                    },
-                    {
-                        "type": "integer",
-                        "description": "category_id",
-                        "name": "category_id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Product"
-                            }
-                        }
-                    }
-                }
-            }
-        },
         "/categories/{id}": {
             "get": {
                 "produces": [
@@ -256,6 +184,97 @@ const docTemplate = `{
             }
         },
         "/categories/{id}/products": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Return products that have the same talent_id as the user in a certain category",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Product"
+                ],
+                "summary": "List Products",
+                "parameters": [
+                    {
+                        "maximum": 1,
+                        "minimum": -1,
+                        "type": "integer",
+                        "description": "0: false, 1: true, -1: all, default is 0",
+                        "name": "closed",
+                        "in": "query"
+                    },
+                    {
+                        "minimum": 0,
+                        "type": "integer",
+                        "default": 0,
+                        "description": "offset of object array",
+                        "name": "offset",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "default": "id",
+                        "description": "SQL ORDER BY field",
+                        "name": "orderBy",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "name": "search",
+                        "in": "query"
+                    },
+                    {
+                        "maximum": 100,
+                        "minimum": 0,
+                        "type": "integer",
+                        "default": 30,
+                        "description": "length of object array",
+                        "name": "size",
+                        "in": "query"
+                    },
+                    {
+                        "enum": [
+                            "asc",
+                            "desc"
+                        ],
+                        "type": "string",
+                        "default": "desc",
+                        "description": "Sort order",
+                        "name": "sort",
+                        "in": "query"
+                    },
+                    {
+                        "maximum": 1,
+                        "minimum": -1,
+                        "type": "integer",
+                        "description": "0: all, 1: sell, -1: buy, default is 0",
+                        "name": "type",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "category id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.Product"
+                            }
+                        }
+                    }
+                }
+            },
             "post": {
                 "security": [
                     {
@@ -1221,6 +1240,14 @@ const docTemplate = `{
                 "summary": "List Products of a User",
                 "parameters": [
                     {
+                        "maximum": 1,
+                        "minimum": -1,
+                        "type": "integer",
+                        "description": "0: false, 1: true, -1: all, default is 0",
+                        "name": "closed",
+                        "in": "query"
+                    },
+                    {
                         "minimum": 0,
                         "type": "integer",
                         "default": 0,
@@ -1233,6 +1260,11 @@ const docTemplate = `{
                         "default": "id",
                         "description": "SQL ORDER BY field",
                         "name": "orderBy",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "name": "search",
                         "in": "query"
                     },
                     {
@@ -1253,6 +1285,14 @@ const docTemplate = `{
                         "default": "desc",
                         "description": "Sort order",
                         "name": "sort",
+                        "in": "query"
+                    },
+                    {
+                        "maximum": 1,
+                        "minimum": -1,
+                        "type": "integer",
+                        "description": "0: all, 1: sell, -1: buy, default is 0",
+                        "name": "type",
                         "in": "query"
                     },
                     {
